@@ -13,7 +13,7 @@ def diff_slope (points):
     BCZ = (points[1][1]-points[2][1])
 
     if(BCX == 0):
-        disp('Slope = undifiend')
+        print('Slope = undifiend')
 
     SlopeBC = (BCZ/BCX)
 
