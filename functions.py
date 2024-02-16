@@ -13,12 +13,12 @@ def get_folder():
     return inputarray
 
 def get_range(array_range):
-    absolute_smallest_interval = (array_range[1,0] - array_range[0,0])
+    min_length_interval = (array_range[1,0] - array_range[0,0])
     if len(array_range) % 2 == 1:
-        max_length_interval = (round(len(array_range) / 2) - 1) * absolute_smallest_interval
+        max_length_interval = (round(len(array_range) / 2) - 1) * min_length_interval
     else:
-        max_length_interval = (len(array_range) / 2 - 1) * absolute_smallest_interval
-    return absolute_smallest_interval, max_length_interval
+        max_length_interval = (len(array_range) / 2 - 1) * min_length_interval
+    return min_length_interval, max_length_interval
 
 def user_range(min_interval,max_interval):
     choice = input(f"The sampling interval currently ranges from {min_interval} to {max_interval}. \n Would you like to input your "
