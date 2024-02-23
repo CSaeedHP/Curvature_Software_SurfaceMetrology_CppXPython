@@ -52,9 +52,13 @@ def array_repackager(input_array,user_lower,user_upper):
     repackaged = np.empty((0,2),float)
     for sampling_interval in range(user_lower,user_upper+1):
         for array_index in range (0, len(input_array)-2*sampling_interval):
-            repackaged = np.append(repackaged, [[input_array[array_index,0],input_array[array_index,1]]], axis = 0)
-            repackaged = np.append(repackaged, [[input_array[array_index + sampling_interval, 0], input_array[array_index + sampling_interval, 1]]], axis = 0)
-            repackaged = np.append(repackaged, [[input_array[array_index + 2 * sampling_interval, 0], input_array[array_index + 2 * sampling_interval, 1]]], axis = 0)
+            group = np.array([[input_array[array_index,0],input_array[array_index,1]]], 
+                             [[input_array[array_index + sampling_interval, 0], input_array[array_index + sampling_interval, 1]]],
+                             [[input_array[array_index + 2 * sampling_interval, 0], input_array[array_index + 2 * sampling_interval, 1]]])
+            repackaged = np.append(repackaged, group)
+            # repackaged = np.append(repackaged, [[input_array[array_index,0],input_array[array_index,1]]], axis = 0)
+            # repackaged = np.append(repackaged, [[input_array[array_index + sampling_interval, 0], input_array[array_index + sampling_interval, 1]]], axis = 0)
+            # repackaged = np.append(repackaged, [[input_array[array_index + 2 * sampling_interval, 0], input_array[array_index + 2 * sampling_interval, 1]]], axis = 0)
     return repackaged
 new_array = array_repackager(input_array,user_min,user_max)
 print(new_array)

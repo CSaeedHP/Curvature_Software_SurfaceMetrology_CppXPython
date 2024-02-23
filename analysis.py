@@ -1,5 +1,6 @@
 from curvature_methods import calculus, herons, obtuse, sign
 from tests import *
+import numpy as np
 
 #this processes all the curvatures
 
