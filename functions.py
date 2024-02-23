@@ -9,7 +9,7 @@ tkinter.Tk().withdraw()  # prevents an empty tkinter window from appearing
 
 def get_folder():
     folder_path = filedialog.askopenfile()
-    inputarray = np.genfromtxt(folder_path)
+    inputarray = np.genfromtxt(folder_path, delimiter=",")
     return inputarray
 
 def get_range(array_range):
@@ -24,10 +24,10 @@ def user_range(min_interval,max_interval):
     choice = input(f"The sampling interval currently ranges from {min_interval} to {max_interval}. \n Would you like to input your "
                    f"own range? Y/N \n").lower()
     if choice == 'y':
-        user_lower = input(f"Please choose a lower bound. The smallest possible lower bound is {min_interval} \n")
+        user_lower = float(input(f"Please choose a lower bound. The smallest possible lower bound is {min_interval} \n"))
         if user_lower < min_interval:
             print(f"Your input value was too small. Your lower bound is now {min_interval}")
-        user_upper = input(f"Please choose an upper bound. The largest possible upper bound is {max_interval} \n")
+        user_upper = float(input(f"Please choose an upper bound. The largest possible upper bound is {max_interval} \n"))
         if user_upper > max_interval:
             print(f"Your input value was too large. Your upper bound is now {max_interval}")
     else:
