@@ -1,20 +1,20 @@
-angletest
-difference of slopes
-FDA
-heron's curvature
-hybrid
-lagrangian
-parabola
-error analysis
-percenterror
-x fault array
-extraction code
-function applicator
-group selector
-initial max scale
-savefile
-importfile
-keyinput
-plotter
-userbound
-XZdisplay
+angletest            : Done
+difference of slopes : Done
+FDA                  : Done
+heron's curvature    : Done
+hybrid               : 
+lagrangian           : Done
+parabola             : Done
+error analysis       : 
+percenterror         : 
+x fault array        : 
+extraction code      : Done
+function applicator  : Work on efficiency
+group selector       : Work on efficiency
+initial max scale    : Done
+savefile             : 
+importfile           : Done
+keyinput             : 
+plotter              : 
+userbound            : Done
+XZdisplay            : 

@@ -17,7 +17,7 @@ def organize_data(data):
     n = len(data)
     scale = 1
     while True:
-        if 2*scale + 1 > n:
+        if 2*scale + 1 > n: # make conditon, while condition?
             break
         points_org.append([])
         for i in range(0, n - 2*scale):
