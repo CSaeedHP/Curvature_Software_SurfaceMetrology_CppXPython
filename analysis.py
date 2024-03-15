@@ -1,6 +1,18 @@
-from curvature_methods import calculus, herons, obtuse, sign
+
 from tests import *
 import numpy as np
+import functions_class
+
+#putting all the functions inside a dictionary
+function_keys = {
+    "herons" : "herons_curvature",
+    "diffslope" : "diff_slope",
+    "calculus" : "quad_curvature",
+    "3lag" : "oriented_lagrangian",
+    "fda" : "fin_diff_slope"
+}
+
+
 
 #this processes all the curvatures
 
@@ -10,24 +22,39 @@ def curvature(points):
         return herons.herons_calc(points) * (2 * sign.sign_calc(points) - 1)
     else:
         return calculus.quad_curvature(points) * (2 * sign.sign_calc(points) - 1)
-    
+
+
+
+
 #data is a two dimensional list of points
 #points_org is a 4-d list (1st level: scales; 2nd level: set of 3 points (this will later be converted into curvatures); 3rd level: x,y coordinates of a single point)
-def organize_data(data):
+def parse_data(data,functionkey):
+    '''takes in points data, and a function key. Returns n by 3 array, columns are X values, Scales, and Curvatures'''
+    #pass in function key here
+    #dictionary reference goes here
+
+    #define curvature function to be used here
+    choicefunction = getattr(functions_class,function_keys[functionkey])
     points_org = []
+    XSC = [] #X is X positions, S is scales, C is curvatures
     n = len(data)
     scale = 1
-    while True:
-        if 2*scale + 1 > n: # make conditon, while condition?
-            break
+    while 2*scale + 1 <= n:
+        # if 2*scale + 1 > n: # make conditon, while co ndition?
+        #     break
         points_org.append([])
         for i in range(0, n - 2*scale):
+            #points is what gets passed into the curvature function
             points = [[data[i][0], data[i][1]], [data[i + scale][0], data[i + scale][1]], [data[i + 2 * scale][0], data[i + 2 * scale][1]]]
-            points_org[-1].append(points)
+            X = points[1][0]
+            S = scale
+            C = choicefunction(points)
+            XSC.append(X, S, C)
         scale += 1
-    return points_org
+    return XSC
 
-#collects the data from sineP.txt and returns a list of points (2d list)
+
+#The data from sineP.txt and returns a list of points (2d list)
 def format_data(file):
     my_file = open(file, "r") 
     data = my_file.read().split()

@@ -1,8 +1,9 @@
 import math
 import numpy as np
 
-#finds a quadratic function that matches three points
+
 def find_quadratic(points):
+    '''find a quadratic function that matches three points'''
     x1 = points[0][0]; x2 = points[1][0]; x3 = points[2][0]; z1 = points[0][1]; z2 = points[1][1]; z3 = points[2][1]
     a = np.array([
         [x1**2, x1, 1],
@@ -13,6 +14,7 @@ def find_quadratic(points):
     solution = np.linalg.solve(a, b)
     return list(solution)
 
+find_quadratic()
 #uses calculus method to find curvature after fitting the points to a parabola
 def quad_curvature(points):
     x1 = points[0][0]; x2 = points[1][0]; x3 = points[2][0]; z1 = points[0][1]; z2 = points[1][1]; z3 = points[2][1]

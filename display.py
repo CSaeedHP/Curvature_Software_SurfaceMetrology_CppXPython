@@ -2,7 +2,10 @@ import numpy as np
 from mpl_toolkits import mplot3d
 import matplotlib.pyplot as plt
 from analysis import *
+from tkinter import filedialog
+import time
 
+start_time = time.time()
 
 fig, axs = plt.subplots(2)
 ax = axs[0]
@@ -10,8 +13,7 @@ ax = plt.axes(projection='3d')
 ax2 = axs[1]
 ax.grid()
 
-data = get_curvature(organize_data(format_data("sineP.txt")))
-
+data = get_curvature(parse_data(format_data(filedialog.askopenfile())))
 
 curvatures = data[0]
 locations = data[1]
@@ -47,3 +49,5 @@ for i in range(len(true_data)):
 axs[1].plot(x, y)
 
 plt.show()
+
+print("process finished in %s", time.time()-start_time)
