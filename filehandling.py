@@ -13,5 +13,11 @@ def OpenCSV():
     csv_reader = csv.reader(fileToOpen) #consumes TextIoWrapper object
 
     # convert string to list 
-    list_of_csv = list(csv_reader) 
+    list_of_csv = list(csv_reader)
+    return list_of_csv
 
+def ReadCSV(CSVtoRead):
+    csv_reader = csv.reader(CSVtoRead)
+    list_of_csv = list(csv_reader)
+    return list_of_csv
+    
