@@ -15,6 +15,7 @@ function_keys = {
 
 
 def askkey(function_keys):
+    '''gets functionkey from user, checks to make sure functionkey is valid'''
     listofkey = function_keys.keys()
     functionkey = input('Please select function analysis, or type "help" for help \n')
     
@@ -25,3 +26,4 @@ def askkey(function_keys):
             functionkey = input('Please select function analysis, or type "help" for help \n')
         else:
             functionkey = input('Your function key is invalid. Please enter a valid function key, or type "help" for more info \n')
+    return functionkey
