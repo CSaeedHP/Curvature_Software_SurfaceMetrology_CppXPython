@@ -29,7 +29,7 @@ def curvature(points):
 
 #data is a two dimensional list of points
 #points_org is a 4-d list (1st level: scales; 2nd level: set of 3 points (this will later be converted into curvatures); 3rd level: x,y coordinates of a single point)
-def parse_data(data,functionkey):
+def parse_data(data,functionkey,min,max):
     '''takes in points data, and a function key. Returns n by 3 array, columns are X values, Scales, and Curvatures'''
     #pass in function key here
     #dictionary reference goes here
@@ -38,19 +38,19 @@ def parse_data(data,functionkey):
     choicefunction = getattr(functions_class,function_keys[functionkey])
     points_org = []
     XSC = [] #X is X positions, S is scales, C is curvatures
-    n = len(data)
-    scale = 1
-    while 2*scale + 1 <= n:
+    max = len(data)
+    scale = min
+    while 2*scale + 1 <= max:
         # if 2*scale + 1 > n: # make conditon, while co ndition?
         #     break
         points_org.append([])
-        for i in range(0, n - 2*scale):
+        for i in range(0, max - 2*scale):
             #points is what gets passed into the curvature function
             points = [[data[i][0], data[i][1]], [data[i + scale][0], data[i + scale][1]], [data[i + 2 * scale][0], data[i + 2 * scale][1]]]
             X = points[1][0]
             S = scale
             C = choicefunction(points)
-            XSC.append(X, S, C)
+            XSC.append([X, S, C])
         scale += 1
     return XSC
 

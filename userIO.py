@@ -1,6 +1,14 @@
 from tkinter import filedialog
 import tkinter
 import math
+
+import numpy as np
+from mpl_toolkits import mplot3d
+import matplotlib.pyplot as plt
+from analysis import *
+import time
+
+
 tkinter.Tk().withdraw()
 def fileselect():
     fileToOpen =filedialog.askopenfile()
@@ -15,11 +23,10 @@ function_keys = {
 }
 
 
-def askkey(function_keys):
+def askkey():
     '''gets functionkey from user, checks to make sure functionkey is valid'''
     listofkey = function_keys.keys()
-    functionkey = input('Please select function analysis, or type "help" for help \n').lower
-    
+    functionkey = input('Please select function analysis, or type "help" for help \n')
     while not functionkey in listofkey:
         if functionkey == "help":
             print("To select function analysis, choose one of the following functions:")
@@ -70,3 +77,14 @@ def get_user_range(input_array):
     print(usermax)
     return usermin,usermax
 
+def plot3d(XSC):
+    X = [row[0] for row in XSC]
+    S = [row[1] for row in XSC]
+    C = [row[2] for row in XSC]
+    ax = plt.axes(projection='3d')
+    ax.grid()
+    ax.scatter3D(X,S,C)
+    ax.set_xlabel('X Position', labelpad=20)
+    ax.set_ylabel('Scale', labelpad=20)
+    ax.set_zlabel('Curvature', labelpad=20)
+    plt.show()

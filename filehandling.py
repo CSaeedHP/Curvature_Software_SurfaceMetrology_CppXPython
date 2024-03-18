@@ -31,3 +31,6 @@ def OpenCSV():
         data[i] = [x, y]
     for x in data:
         return data
+
+def WriteCSV():
+    new_file = filedialog.asksaveasfile()
