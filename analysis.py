@@ -17,6 +17,7 @@ function_keys = {
 #this processes all the curvatures
 
 #returns the curvature of a given 2d array of 3 points
+#functionally hybrid, work is needed
 def curvature(points):
     if obtuse.isObtuse(points):
         return herons.herons_calc(points) * (2 * sign.sign_calc(points) - 1)
@@ -54,16 +55,7 @@ def parse_data(data,functionkey):
     return XSC
 
 
-#The data from sineP.txt and returns a list of points (2d list)
-def format_data(file):
-    my_file = open(file, "r") 
-    data = my_file.read().split()
-    for i in range(len(data)):
-        point = data[i].split(',')
-        x = float(point[0]); y = float(point[1])
-        data[i] = [x, y]
-    for x in data:
-        return data
+
 
 
 def get_curvature(data):
