@@ -32,5 +32,9 @@ def OpenCSV():
     for x in data:
         return data
 
-def WriteCSV():
+def WriteCSV(XSC):
     new_file = filedialog.asksaveasfile()
+    writer = csv.writer(new_file)
+    writer.writerows(XSC)
+def TestWrite():
+    filedialog.asksaveasfile()

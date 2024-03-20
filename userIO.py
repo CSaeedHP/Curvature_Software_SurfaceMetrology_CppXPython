@@ -7,7 +7,8 @@ from mpl_toolkits import mplot3d
 import matplotlib.pyplot as plt
 from analysis import *
 import time
-
+#pip install plotly
+import plotly.graph_objects as go
 
 tkinter.Tk().withdraw()
 def fileselect():
@@ -22,7 +23,13 @@ function_keys = {
     "fda" : "fin_diff_slope"
 }
 
-
+def YesNo(message):
+    question = input(message + "\n").lower
+    if question == "y":
+        answer = True
+    else:
+        answer = False
+    return answer
 def askkey():
     '''gets functionkey from user, checks to make sure functionkey is valid'''
     listofkey = function_keys.keys()
@@ -88,3 +95,21 @@ def plot3d(XSC):
     ax.set_ylabel('Scale', labelpad=20)
     ax.set_zlabel('Curvature', labelpad=20)
     plt.show()
+def plot2d(input_array):
+    X = [row[0] for row in input_array]
+    Y = [row[1] for row in input_array]
+    ax = plt.axes()
+    ax.grid()
+    ax.scatter(X,Y)
+    ax.set_xlabel('X position', labelpad = 20)
+    ax.set_ylabel('Height', labelpad = 20)
+    plt.show(False)
+def plotly3d(XSC):
+    marker_data = go.Scatter3d(x=[row[0] for row in XSC],
+                               y=[row[1] for row in XSC],
+                               z=[row[2] for row in XSC],
+                               marker=go.scatter3d.Marker(size=3),
+                               opacity=1,
+                               mode='markers')
+    fig=go.Figure(data=marker_data)
+    fig.show()
