@@ -2,6 +2,7 @@
 from tests import *
 import numpy as np
 import functions_class
+from alive_progress import alive_bar;
 
 #putting all the functions inside a dictionary
 function_keys = {
@@ -26,7 +27,12 @@ def curvature(points):
 
 
 
-
+def ops(number,data):
+    if data%2 == 1:
+        operations = number^2
+    else:
+        operations = number * (number + 1)
+    return operations
 #data is a two dimensional list of points
 #points_org is a 4-d list (1st level: scales; 2nd level: set of 3 points (this will later be converted into curvatures); 3rd level: x,y coordinates of a single point)
 def parse_data(data,functionkey,min,max):
@@ -35,23 +41,28 @@ def parse_data(data,functionkey,min,max):
     #dictionary reference goes here
 
     #define curvature function to be used here
+    
+
     choicefunction = getattr(functions_class,function_keys[functionkey])
     points_org = []
     XSC = [] #X is X positions, S is scales, C is curvatures
-    max = len(data)
+    min_length_interval = (data[1][0] - data[0][0])
+    datamax = len(data)
     scale = min
-    while 2*scale + 1 <= max:
-        # if 2*scale + 1 > n: # make conditon, while co ndition?
-        #     break
-        points_org.append([])
-        for i in range(0, max - 2*scale):
-            #points is what gets passed into the curvature function
-            points = [[data[i][0], data[i][1]], [data[i + scale][0], data[i + scale][1]], [data[i + 2 * scale][0], data[i + 2 * scale][1]]]
-            X = points[1][0]
-            S = scale
-            C = choicefunction(points)
-            XSC.append([X, S, C])
-        scale += 1
+    with alive_bar(max - min + 1) as bar:
+        while scale <= max:
+            # if 2*scale + 1 > n: # make conditon, while co ndition?
+            #     break
+            points_org.append([])
+            for i in range(0, datamax - 2*scale):
+                #points is what gets passed into the curvature function
+                points = [[data[i][0], data[i][1]], [data[i + scale][0], data[i + scale][1]], [data[i + 2 * scale][0], data[i + 2 * scale][1]]]
+                X = points[1][0]
+                S = scale * min_length_interval
+                C = choicefunction(points)
+                XSC.append([X, S, C])
+            scale += 1
+            bar()
     return XSC
 
 

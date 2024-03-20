@@ -24,8 +24,8 @@ function_keys = {
 }
 
 def YesNo(message):
-    question = input(message + "\n").lower
-    if question == "y":
+    question = str(input(message + "\n"))
+    if question == "y" or question == "Y":
         answer = True
     else:
         answer = False
@@ -113,3 +113,4 @@ def plotly3d(XSC):
                                mode='markers')
     fig=go.Figure(data=marker_data)
     fig.show()
+
