@@ -21,7 +21,8 @@ function_keys = {
     "diffslope" : "diff_slope",
     "calculus" : "quad_curvature",
     "3lag" : "oriented_lagrangian",
-    "fda" : "fin_diff_slope"
+    "fda" : "fin_diff_slope",
+    "hybrid": "parse_hybrid_data"
 }
 
 def YesNo(message):
@@ -43,6 +44,18 @@ def askkey():
             functionkey = input('Please select function analysis, or type "help" for help \n')
         else:
             functionkey = input('Your function key is invalid. Please enter a valid function key, or type "help" for more info \n')
+    if functionkey == "hybrid":
+        obtusekey = input('Please select function analysis for obtuse angles, or type "help" for help \n')
+        while (not functionkey in listofkey) or functionkey == "hybrid":
+            if functionkey == "hybrid":
+                print("You cannot use hybrid function within hybrid function. Please choose a different function \n")
+            elif functionkey == "help":
+                print("To select function analysis, choose one of the following functions:")
+                print(listofkey)
+                functionkey = input('Please select function analysis for obtuse angles, or type "help" for help \n')
+            else:
+                functionkey = input('Your function key is invalid. Please enter a valid function key, or type "help" for more info \n')
+
     return functionkey
 
 

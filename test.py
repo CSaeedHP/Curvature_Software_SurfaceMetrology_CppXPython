@@ -11,8 +11,8 @@ import matplotlib as mpl
 #asking user for info
 input_array = filehandling.OpenCSV()
 
+plt.figure(1)
 display2d = display.plot2d(input_array)
-plt.subplots(1,2,sharex=False,sharey=False)
 functionkey = userIO.askkey()
 
 [user_min,user_max] = userIO.get_user_range(input_array)
@@ -29,6 +29,7 @@ print(len(XSC)) #debug purposes check len xsc
 # if totalops > 1000000:
 #     print("Note: graphing not recommended with large amounts of data.") totalops unfinished
 graphon = userIO.YesNo("Graph 3d plot?")
+plt.figure(2)
 if graphon:
     if len(XSC) > 1000000:
         print("Note: graphing not recommended with large amounts of data.")
@@ -37,10 +38,12 @@ if graphon:
             display.plot3d(XSC)
         elif userIO.YesNo("Graph with a random sample of 1 million points?"):
             print("graphing...")
-            samplepoints = random.sample(1000000,XSC)
+            samplepoints = random.sample(XSC,1000000)
             display.plotly3d(samplepoints)
     else:
         print("graphing...")
+        # samplepoints = random.sample(XSC,10000)
+        # display.plotly3d(samplepoints)
         display3d = display.plot3d(XSC)
 
 plt.show(block = False)
