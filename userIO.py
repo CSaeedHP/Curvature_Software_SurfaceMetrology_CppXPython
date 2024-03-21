@@ -50,7 +50,7 @@ def get_range(input_array):
     '''determines minimum and maximum interval, handles odd and even data'''
     min_length_interval = (input_array[1][0] - input_array[0][0])
     if len(input_array) % 2 == 1: #odd even data handler
-        max_length_interval = (round(len(input_array) / 2) - 1) * min_length_interval
+        max_length_interval = ((len(input_array) -1)/2)* min_length_interval
     else:
         max_length_interval = (len(input_array) / 2 - 1) * min_length_interval
     return min_length_interval, max_length_interval
@@ -59,22 +59,31 @@ def user_range(min_interval,max_interval):
     '''using minimum and maximum interval, prompts user to check if narrower scope is wanted'''
     choice = input(f"The sampling interval currently ranges from {min_interval} to {max_interval}. \n Would you like to input your "
                    f"own range? Y/N \n").lower()
+    scale_user_lower = 1
+    scale_user_upper = 0
     if choice == 'y':
-        user_lower = float(input(f"Please choose a lower bound. The smallest possible lower bound is {min_interval} \n"))
-        if user_lower < min_interval:
-            print(f"Your input value was too small. Your lower bound was automatically set to {min_interval}")
-            user_lower = min_interval
-        user_upper = float(input(f"Please choose an upper bound. The largest possible upper bound is {max_interval} \n"))
-        if user_upper > max_interval:
-            print(f"Your input value was too large. Your upper bound was automatically set to {max_interval}")
-            user_upper = max_interval
+        while scale_user_lower > scale_user_upper:
+            user_lower = float(input(f"Please choose a lower bound. The smallest possible lower bound is {min_interval} \n"))
+            if user_lower < min_interval:
+                print(f"Your input value was too small. Your lower bound was automatically set to {min_interval}")
+                user_lower = min_interval
+            user_upper = float(input(f"Please choose an upper bound. The largest possible upper bound is {max_interval} \n"))
+            if user_upper > max_interval:
+                print(f"Your input value was too large. Your upper bound was automatically set to {max_interval}")
+                user_upper = max_interval
+            scale_user_lower = math.floor(user_lower/min_interval)
+            scale_user_upper = math.ceil(user_upper/min_interval)
+            if scale_user_lower > scale_user_upper:
+                print("Error: Minimum value cannot exceed Maximum value, please reenter your bounds.")
     else:
         user_lower = min_interval
         user_upper = max_interval
         print(f"Bounds have been automatically set to ({user_lower},{user_upper})")
+        scale_user_lower = math.floor(user_lower/min_interval)
+        scale_user_upper = math.ceil(user_upper/min_interval)
+    
     print(f"Your selected bounds are ({user_lower},{user_upper})")
-    scale_user_lower = math.floor(user_lower/min_interval)
-    scale_user_upper = math.ceil(user_upper/min_interval)
+    
     return scale_user_lower,scale_user_upper
 def get_user_range(input_array):
     '''gets user range from input array after prompting user'''
@@ -114,3 +123,22 @@ def plotly3d(XSC):
     fig=go.Figure(data=marker_data)
     fig.show()
 
+
+
+def ops(datanumber):
+    totaloperations = datanumber^2
+    print(datanumber)
+    if datanumber%2 == 1:
+        totaloperations = datanumber * datanumber
+    else:
+        totaloperations = datanumber * (datanumber + 1)
+    print(totaloperations)
+    return totaloperations
+def totalCurvaturesScales(data,min,max):
+    datamax = len(data)
+    totalops = ((ops(datamax - 2*min) - ops(datamax - 2*max)))/4
+    print("analyzing data...")
+    print(f"{totalops} curvatures calculating...\n{max-min+1} scales calculating...")
+    return totalops
+totalops = ((ops(10001 - 2) - ops(10001-10000)))
+print(totalops)

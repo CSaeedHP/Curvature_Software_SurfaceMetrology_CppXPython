@@ -27,12 +27,7 @@ def curvature(points):
 
 
 
-def ops(number,data):
-    if data%2 == 1:
-        operations = number^2
-    else:
-        operations = number * (number + 1)
-    return operations
+
 #data is a two dimensional list of points
 #points_org is a 4-d list (1st level: scales; 2nd level: set of 3 points (this will later be converted into curvatures); 3rd level: x,y coordinates of a single point)
 def parse_data(data,functionkey,min,max):
@@ -42,9 +37,8 @@ def parse_data(data,functionkey,min,max):
 
     #define curvature function to be used here
     
-
     choicefunction = getattr(functions_class,function_keys[functionkey])
-    points_org = []
+    # points_org = []
     XSC = [] #X is X positions, S is scales, C is curvatures
     min_length_interval = (data[1][0] - data[0][0])
     datamax = len(data)
@@ -53,13 +47,15 @@ def parse_data(data,functionkey,min,max):
         while scale <= max:
             # if 2*scale + 1 > n: # make conditon, while co ndition?
             #     break
-            points_org.append([])
+            # points_org.append([]) deprecated
+            S = scale * min_length_interval
             for i in range(0, datamax - 2*scale):
                 #points is what gets passed into the curvature function
-                points = [[data[i][0], data[i][1]], [data[i + scale][0], data[i + scale][1]], [data[i + 2 * scale][0], data[i + 2 * scale][1]]]
-                X = points[1][0]
-                S = scale * min_length_interval
-                C = choicefunction(points)
+                # points = [[data[i][0], data[i][1]], [data[i + scale][0], data[i + scale][1]], [data[i + 2 * scale][0], data[i + 2 * scale][1]]]
+                
+                X = data[i + scale][0] #points[1][0]
+                
+                C = choicefunction(data[i][0], data[i][1], X, data[i + scale][1], data[i + 2 * scale][0], data[i + 2 * scale][1])
                 XSC.append([X, S, C])
             scale += 1
             bar()
