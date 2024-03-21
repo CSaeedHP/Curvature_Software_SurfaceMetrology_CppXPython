@@ -33,8 +33,11 @@ def OpenCSV():
         return data
 
 def WriteCSV(XSC):
+    '''writes input list of list to csv file at user specified location'''
     new_file = filedialog.asksaveasfile()
     writer = csv.writer(new_file)
     writer.writerows(XSC)
 def TestWrite():
     filedialog.asksaveasfile()
+
+    

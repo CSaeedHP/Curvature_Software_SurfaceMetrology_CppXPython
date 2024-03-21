@@ -12,6 +12,7 @@ import plotly.graph_objects as go
 
 tkinter.Tk().withdraw()
 def fileselect():
+    '''opens computer file dialogue window'''
     fileToOpen =filedialog.askopenfile()
     return fileToOpen
 
@@ -24,6 +25,7 @@ function_keys = {
 }
 
 def YesNo(message):
+    '''returns boolean of user's response'''
     question = str(input(message + "\n"))
     if question == "y" or question == "Y":
         answer = True
@@ -51,13 +53,19 @@ def get_range(input_array):
     min_length_interval = (input_array[1][0] - input_array[0][0])
     if len(input_array) % 2 == 1: #odd even data handler
         max_length_interval = ((len(input_array) -1)/2)* min_length_interval
+        odd = True
     else:
         max_length_interval = (len(input_array) / 2 - 1) * min_length_interval
-    return min_length_interval, max_length_interval
+        odd = False
+    return min_length_interval, max_length_interval,odd
+
+
+
+
 
 def user_range(min_interval,max_interval):
     '''using minimum and maximum interval, prompts user to check if narrower scope is wanted'''
-    choice = input(f"The sampling interval currently ranges from {min_interval} to {max_interval}. \n Would you like to input your "
+    choice = input(f"The sampling interval currently ranges from {min_interval} to {max_interval}.\nWould you like to input your "
                    f"own range? Y/N \n").lower()
     scale_user_lower = 1
     scale_user_upper = 0
@@ -80,65 +88,58 @@ def user_range(min_interval,max_interval):
         user_upper = max_interval
         print(f"Bounds have been automatically set to ({user_lower},{user_upper})")
         scale_user_lower = math.floor(user_lower/min_interval)
-        scale_user_upper = math.ceil(user_upper/min_interval)
-    
+        scale_user_upper = math.ceil(user_upper/min_interval)  
     print(f"Your selected bounds are ({user_lower},{user_upper})")
-    
-    return scale_user_lower,scale_user_upper
+    return scale_user_lower,scale_user_upper,max_interval/min_interval
+
+
+
+
+def evendata(scales,min,max):
+    minops = scales - min + 1
+    maxops = scales - max
+    totalops = minops**2 + minops - maxops ** 2 - maxops
+    return totalops
+
+def odddata(scales,min,max):
+    minops = scales - min + 1
+    maxops = scales - max
+    totalops = minops**2 - maxops ** 2
+    return totalops
+
 def get_user_range(input_array):
     '''gets user range from input array after prompting user'''
-    [min_length_interval,max_length_interval] = get_range(input_array)
-    [usermin,usermax] =  user_range(min_length_interval,max_length_interval)
-    print(usermin)
-    print(usermax)
+    [min_length_interval,max_length_interval,odd] = get_range(input_array)
+    [usermin,usermax,maxscale] =  user_range(min_length_interval,max_length_interval)
+    if (odd):
+        print("odd number of datapoints")
+        print(f"{odddata(maxscale,usermin,usermax)} total operations in progress")
+    else:
+        print("even number of datapoints")
+        print(f"{evendata(maxscale,usermin,usermax)} total operations in progress")
     return usermin,usermax
 
-def plot3d(XSC):
-    X = [row[0] for row in XSC]
-    S = [row[1] for row in XSC]
-    C = [row[2] for row in XSC]
-    ax = plt.axes(projection='3d')
-    ax.grid()
-    ax.scatter3D(X,S,C)
-    ax.set_xlabel('X Position', labelpad=20)
-    ax.set_ylabel('Scale', labelpad=20)
-    ax.set_zlabel('Curvature', labelpad=20)
-    plt.show()
-def plot2d(input_array):
-    X = [row[0] for row in input_array]
-    Y = [row[1] for row in input_array]
-    ax = plt.axes()
-    ax.grid()
-    ax.scatter(X,Y)
-    ax.set_xlabel('X position', labelpad = 20)
-    ax.set_ylabel('Height', labelpad = 20)
-    plt.show(False)
-def plotly3d(XSC):
-    marker_data = go.Scatter3d(x=[row[0] for row in XSC],
-                               y=[row[1] for row in XSC],
-                               z=[row[2] for row in XSC],
-                               marker=go.scatter3d.Marker(size=3),
-                               opacity=1,
-                               mode='markers')
-    fig=go.Figure(data=marker_data)
-    fig.show()
 
 
 
-def ops(datanumber):
-    totaloperations = datanumber^2
-    print(datanumber)
-    if datanumber%2 == 1:
-        totaloperations = datanumber * datanumber
-    else:
-        totaloperations = datanumber * (datanumber + 1)
-    print(totaloperations)
-    return totaloperations
+
+
+
+
+# def ops(datanumber):
+#     totaloperations = datanumber^2
+#     print(datanumber)
+#     if datanumber%2 == 1:
+#         totaloperations = datanumber * datanumber
+#     else:
+#         totaloperations = datanumber * (datanumber + 1)
+#     print(totaloperations)
+#     return totaloperations
 def totalCurvaturesScales(data,min,max):
     datamax = len(data)
     totalops = ((ops(datamax - 2*min) - ops(datamax - 2*max)))/4
     print("analyzing data...")
     print(f"{totalops} curvatures calculating...\n{max-min+1} scales calculating...")
     return totalops
-totalops = ((ops(10001 - 2) - ops(10001-10000)))
-print(totalops)
+# totalops = ((ops(10001 - 2) - ops(10001-10000)))
+# print(totalops)

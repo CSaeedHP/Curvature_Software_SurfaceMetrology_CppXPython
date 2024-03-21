@@ -3,6 +3,7 @@ from tests import *
 import numpy as np
 import functions_class
 from alive_progress import alive_bar;
+#pip install alive-progress
 
 #putting all the functions inside a dictionary
 function_keys = {
@@ -92,3 +93,6 @@ def get_spacing():
 #returns the actual curvature data for the test sample
 def get_actual():
     return format_data("sineC.txt")
+
+
+
