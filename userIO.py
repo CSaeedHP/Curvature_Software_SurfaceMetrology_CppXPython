@@ -7,8 +7,6 @@ from mpl_toolkits import mplot3d
 import matplotlib.pyplot as plt
 from analysis import *
 import time
-#pip install plotly
-import plotly.graph_objects as go
 
 tkinter.Tk().withdraw()
 def fileselect():

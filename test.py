@@ -28,6 +28,13 @@ print(len(XSC)) #debug purposes check len xsc
 #plotting
 # if totalops > 1000000:
 #     print("Note: graphing not recommended with large amounts of data.") totalops unfinished
+
+
+#here is error analysis
+if userIO.YesNo("Perform error analysis? "):
+    theoretical_curvatures = filehandling.OpenCSV()
+    analysis.percent_error(XSC,theoretical_curvatures)
+
 graphon = userIO.YesNo("Graph 3d plot?")
 plt.figure(2)
 if graphon:
@@ -39,7 +46,7 @@ if graphon:
         elif userIO.YesNo("Graph with a random sample of 1 million points?"):
             print("graphing...")
             samplepoints = random.sample(XSC,1000000)
-            display.plotly3d(samplepoints)
+            display.plot3d(samplepoints)
     else:
         print("graphing...")
         # samplepoints = random.sample(XSC,10000)

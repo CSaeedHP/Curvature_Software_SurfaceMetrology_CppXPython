@@ -108,6 +108,9 @@ def get_curvature(data):
     #print(positions)
     return [data, positions]
 
+
+
+
 #returns the average of the magnitude in % error
 def compare(data, real):
     sum = 0
@@ -115,28 +118,41 @@ def compare(data, real):
         sum += abs(real[i+1][1] - data[i])/real[i][1]
     return 100 * sum/len(real)
 
+
+
+
 #gets the 'pixel length' of the data
 def get_spacing():
     data = format_data("sineP.txt")
     return data[1][0] - data[0][0]
 
+
+
+
 #returns the actual curvature data for the test sample
 def get_actual():
     return format_data("sineC.txt")
+
+
+
 
 #returns percent error (0-100) between two given values
 def error_calculation(calculated, theoretical):
     perc_error  = abs(calculated-theoretical)/theoretical
     return perc_error
-'''
-def percent_rror(xsc, curv_theoretical):
-    x_positions = xsc[0][:] #array of x positions
-    curv_calculated = xsc[1][:] #array of calculated curvature values
-    scales = xsc[2][0]   #array of scales
 
 
+
+
+def percent_error(xsc, curv_theoretical):
+    # x_positions = xsc[0][:] #array of x positions
+    # curv_calculated = xsc[1][:] #array of calculated curvature values
+    # scales = xsc[2][:] #array of scales
+    x_positions = [row[0] for row in xsc]
+    scales = [row[1] for row in xsc]
+    curv_calculated = [row[2] for row in xsc]
     curv_theoretical = curv_theoretical[2:len(curv_theoretical)-1][:] #
-    [rows, columns] = len(x_positions)
+    columns = len(x_positions)
 
     PE = []
     search = 1
@@ -147,27 +163,34 @@ def percent_rror(xsc, curv_theoretical):
             indexlimits = [indexlimits, search]
         search = search + 1
     
-    iteration = 1
-    act_curv_val_index = 1
-    ili = 1
+    iteration = 0
+    act_curv_val_index = 0
+    ili = 0
+    subiteration = 0
 
     [row1, column1] = len(indexlimits)
     
     while iteration < columns:
         #Actualcurvature rows change, not columns (column 1 = x_pos position, column 2 = curvature) 
-        if((ili < search) and (ili <= column1) and iteration == indexlimits(ili)))
-            act_curv_val_index = find(curv_theoretical(:, 1) == x_pos(iteration))
-            ili = ili + 1
+        if((ili < search) and (ili <= column1) and (iteration == indexlimits(ili))):
+            while((curv_theoretical(subiteration) != x_positions(iteration))):
+                act_curv_val_index = (curv_theoretical(subiteration) == x_positions(iteration))
+                subiteration += 1
+            subiteration = 0
+            ili += 1
 
-        PE[iteration] = (abs((curv_theoretical(act_curv_val_index, 2) - curv_calculated(iteration))/(curv_theoretical(act_curv_val_index, 2)))*100);
+        PE[iteration] = (abs((curv_theoretical(act_curv_val_index, 2) - curv_calculated(iteration))/(curv_theoretical(act_curv_val_index, 2)))*100)
 
-        act_curv_val_index =+ 1
-        iteration =+ 1
-        
-    act_curv_val_index = find(curv_theoretical(:, 1) == x_pos(columns));
-    PE[iteration] = (abs((curv_theoretical(act_curv_val_index, 2) - C(iteration))/(curv_theoretical(act_curv_val_index, 2)))*100);
+        act_curv_val_index += 1
+        iteration += 1
+    
+        while((curv_theoretical(subiteration) != x_positions(iteration))):
+            act_curv_val_index = (curv_theoretical(subiteration) == x_positions(iteration))
+            subiteration += 1
+        subiteration = 0
+        ili += 1
+        PE[iteration] = (abs((curv_theoretical(act_curv_val_index, 2) - curv_calculated(iteration))/(curv_theoretical(act_curv_val_index, 2)))*100)
 
     return PE
 
-'''
 
