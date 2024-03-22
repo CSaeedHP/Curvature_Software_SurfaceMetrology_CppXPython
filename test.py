@@ -39,8 +39,9 @@ if userIO.YesNo("Perform error analysis? "):
     analysis.percent_error(XSC,theoretical_curvatures)
 
 graphon = userIO.YesNo("Graph 3d plot?")
-plt.figure(2)
+
 if graphon:
+    plt.figure(2)
     if len(XSC) > 1000000:
         print("Note: graphing not recommended with large amounts of data.")
         if userIO.YesNo("Continue with graphing?"):
