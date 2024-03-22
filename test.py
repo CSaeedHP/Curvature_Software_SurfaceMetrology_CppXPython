@@ -22,7 +22,10 @@ display2d = display.plot2d(input_array)
 start_time = time.time()
 
 # totalops = userIO.totalCurvaturesScales(input_array,user_min,user_max)
-XSC = analysis.parse_data(input_array,functionkey,user_min,user_max)
+if functionkey == "hybrid":
+    XSC = analysis.parse_hybrid_data(input_array,obtusekey,acutekey,user_min,user_max)
+else:
+    XSC = analysis.parse_data(input_array,functionkey,user_min,user_max)
 print(f"process finished in {time.time()-start_time}s")
 print(len(XSC)) #debug purposes check len xsc
 #plotting

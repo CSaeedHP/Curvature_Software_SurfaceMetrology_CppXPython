@@ -79,7 +79,7 @@ def plot3d(XSC):
     else:
         ax.set_ylabel('Scale', labelpad=20)
     ax.set_zlabel('Curvature', labelpad=20)
-    plt.colorbar(mpl.cm.ScalarMappable(cmap='turbo'), orientation='vertical', label='Curvature')
+    # plt.colorbar(mpl.cm.ScalarMappable(cmap='turbo'), orientation='vertical', label='Curvature',)
     return ax
     plt.show(block = False)
     

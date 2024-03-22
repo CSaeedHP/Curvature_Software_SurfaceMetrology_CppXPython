@@ -52,7 +52,7 @@ def askkey():
         obtusekey = input('Please select function analysis for obtuse angles, or type "help" for help \n')
         while (not obtusekey in listofkey) or obtusekey == "hybrid":
             if obtusekey == "hybrid":
-                print("You cannot use hybrid function within hybrid function. Please choose a different function \n")
+                obtusekey = input("You cannot use hybrid function within hybrid function. Please choose a different function \n")
             elif obtusekey == "help":
                 print("To select function analysis, choose one of the following functions:")
                 print(listofkey)
@@ -62,7 +62,7 @@ def askkey():
         acutekey = input('Please select function analysis for acute angles, or type "help" for help \n')
         while (not acutekey in listofkey) or acutekey == "hybrid":
             if acutekey == "hybrid":
-                print("You cannot use hybrid function within hybrid function. Please choose a different function \n")
+                acutekey = input("You cannot use hybrid function within hybrid function. Please choose a different function \n")
             elif acutekey == "help":
                 print("To select function analysis, choose one of the following functions:")
                 print(listofkey)
