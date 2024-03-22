@@ -3,6 +3,9 @@ import csv
 import tkinter
 from tkinter import filedialog
 tkinter.Tk().withdraw() 
+window = tkinter.Tk()
+window.wm_attributes('-topmost', 1)
+window.withdraw()
 # def OpenCSV():
 #     '''Opens native file explorer. Opens CSV files only.'''
 #     fileToOpen = filedialog.askopenfile() #generate TextIOWrapper object
@@ -23,7 +26,12 @@ def ReadCSV(CSVtoRead):
 
 
 def OpenCSV():
-    my_file = filedialog.askopenfile()
+    my_file = filedialog.askopenfile(parent=window,
+                                  initialdir="",
+                                  title="Select A File",
+                                  filetypes = (("CSV files (Comma separated value)", "*.csv"),
+                                               ("Text files", "*.txt"), 
+                                               ("All files", "*")))
     data = my_file.read().split()
     for i in range(len(data)):
         point = data[i].split(',')
@@ -34,7 +42,12 @@ def OpenCSV():
 
 def WriteCSV(XSC):
     '''writes input list of list to csv file at user specified location'''
-    new_file = filedialog.asksaveasfile()
+    new_file = filedialog.asksaveasfile(parent=window,
+                                        initialdir="",
+                                        title="Select A File",
+                                        filetypes = (("CSV files (Comma separated value)", "*.csv"),
+                                               ("Text files", "*.txt"), 
+                                               ("All files", "*")))
     writer = csv.writer(new_file)
     writer.writerows(XSC)
 def TestWrite():
