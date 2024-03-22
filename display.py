@@ -5,7 +5,7 @@ import matplotlib as mpl
 from analysis import *
 from tkinter import filedialog
 import time
-import plotly.graph_objects as go
+# import plotly.graph_objects as go
 import math
 import userIO
 
@@ -61,8 +61,12 @@ import userIO
 
 
 def plot3d(XSC):
+    
     '''plot a set of points for curvature'''
     userlog = False
+    labelpadsize = 40
+    axes_font = 40
+    plt.rcParams['font.size'] = 20
     X = [row[0] for row in XSC]
     if userIO.YesNo("Logarithmic scale?"):
         S = [math.log(row[1],10) for row in XSC]
@@ -71,17 +75,18 @@ def plot3d(XSC):
         S = [row[1] for row in XSC]
     C = [row[2] for row in XSC]
     ax = plt.axes(projection='3d')
+    
     colors = plt.cm.turbo(C)
     ax.scatter3D(X,S,C,c=colors)
-    ax.set_xlabel('X Position', labelpad=20)
+    ax.set_xlabel('X Position', labelpad=labelpadsize)
     if userlog:
-        ax.set_ylabel('log(Scale)', labelpad=20)
+        ax.set_ylabel('log(Scale)', labelpad=labelpadsize)
     else:
-        ax.set_ylabel('Scale', labelpad=20)
-    ax.set_zlabel('Curvature', labelpad=20)
-    # plt.colorbar(mpl.cm.ScalarMappable(cmap='turbo'), orientation='vertical', label='Curvature',)
+        ax.set_ylabel('Scale', labelpad=labelpadsize)
+    ax.set_zlabel('Curvature', labelpad=labelpadsize)
+    plt.colorbar(mpl.cm.ScalarMappable(cmap='turbo'), ax=ax, orientation='vertical', label='Curvature')
     return ax
-    plt.show(block = False)
+    # plt.show(block = False)
     
 def plot2d(input_array):
     # fig, axs = plt.subplots(2)
@@ -90,6 +95,7 @@ def plot2d(input_array):
 # ax2 = axs[1]
 # ax.grid()
     plt.figure(1)
+    plt.rcParams['font.size'] = 20
     X = [row[0] for row in input_array]
     Y = [row[1] for row in input_array]
     ax = plt.axes()
@@ -100,12 +106,12 @@ def plot2d(input_array):
     return ax
     plt.show(block = False)
 
-def plotly3d(XSC):
-    marker_data = go.Scatter3d(x=[row[0] for row in XSC],
-                               y=[row[1] for row in XSC],
-                               z=[row[2] for row in XSC],
-                               marker=go.scatter3d.Marker(size=3),
-                               opacity=1,
-                               mode='markers')
-    fig=go.Figure(data=marker_data)
-    fig.show()
+# def plotly3d(XSC):
+#     marker_data = go.Scatter3d(x=[row[0] for row in XSC],
+#                                y=[row[1] for row in XSC],
+#                                z=[row[2] for row in XSC],
+#                                marker=go.scatter3d.Marker(size=3),
+#                                opacity=1,
+#                                mode='markers')
+#     fig=go.Figure(data=marker_data)
+#     fig.show()

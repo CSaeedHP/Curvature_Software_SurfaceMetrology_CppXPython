@@ -6,3 +6,4 @@ matplotlib
 plotly
 alive_progress
 math
+pip install alive_progress matplotlib plotly
