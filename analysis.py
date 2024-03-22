@@ -128,7 +128,7 @@ def get_actual():
 def error_calculation(calculated, theoretical):
     perc_error  = abs(calculated-theoretical)/theoretical
     return perc_error
-
+'''
 def percent_rror(xsc, curv_theoretical):
     x_positions = xsc[0][:] #array of x positions
     curv_calculated = xsc[1][:] #array of calculated curvature values
@@ -169,5 +169,5 @@ def percent_rror(xsc, curv_theoretical):
 
     return PE
 
-
+'''
 

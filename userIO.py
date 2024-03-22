@@ -45,16 +45,29 @@ def askkey():
         else:
             functionkey = input('Your function key is invalid. Please enter a valid function key, or type "help" for more info \n')
     if functionkey == "hybrid":
+        del function_keys["hybrid"]
+        listofkey = function_keys.keys()
         obtusekey = input('Please select function analysis for obtuse angles, or type "help" for help \n')
-        while (not functionkey in listofkey) or functionkey == "hybrid":
-            if functionkey == "hybrid":
+        while (not obtusekey in listofkey) or obtusekey == "hybrid":
+            if obtusekey == "hybrid":
                 print("You cannot use hybrid function within hybrid function. Please choose a different function \n")
-            elif functionkey == "help":
+            elif obtusekey == "help":
                 print("To select function analysis, choose one of the following functions:")
                 print(listofkey)
-                functionkey = input('Please select function analysis for obtuse angles, or type "help" for help \n')
+                obtusekey = input('Please select function analysis for obtuse angles, or type "help" for help \n')
             else:
-                functionkey = input('Your function key is invalid. Please enter a valid function key, or type "help" for more info \n')
+                obtusekey = input('Your function key is invalid. Please enter a valid function key, or type "help" for more info \n')
+        acutekey = input('Please select function analysis for acute angles, or type "help" for help \n')
+        while (not acutekey in listofkey) or acutekey == "hybrid":
+            if acutekey == "hybrid":
+                print("You cannot use hybrid function within hybrid function. Please choose a different function \n")
+            elif acutekey == "help":
+                print("To select function analysis, choose one of the following functions:")
+                print(listofkey)
+                acutekey = input('Please select function analysis for obtuse angles, or type "help" for help \n')
+            else:
+                acutekey = input('Your function key is invalid. Please enter a valid function key, or type "help" for more info \n')
+
 
     return functionkey
 
