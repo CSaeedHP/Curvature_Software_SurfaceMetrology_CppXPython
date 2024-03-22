@@ -63,7 +63,7 @@ def parse_hybrid_data(data,obtusekey,acutekey,min,max):
     #define curvature function to be used here
     
     obtusefunction = getattr(functions_class,function_keys[obtusekey])
-    acutefunction = getattr(functions_class,function_keys[acutefunction])
+    acutefunction = getattr(functions_class,function_keys[acutekey])
     # points_org = []
     XSC = [] #X is X positions, S is scales, C is curvatures
     min_length_interval = (data[1][0] - data[0][0])

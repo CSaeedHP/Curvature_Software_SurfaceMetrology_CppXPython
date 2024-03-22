@@ -13,7 +13,7 @@ input_array = filehandling.OpenCSV()
 
 plt.figure(1)
 display2d = display.plot2d(input_array)
-functionkey = userIO.askkey()
+[functionkey,obtusekey,acutekey] = userIO.askkey()
 
 [user_min,user_max] = userIO.get_user_range(input_array)
 

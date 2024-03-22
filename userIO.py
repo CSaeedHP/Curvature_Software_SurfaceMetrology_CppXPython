@@ -35,6 +35,8 @@ def askkey():
     '''gets functionkey from user, checks to make sure functionkey is valid'''
     listofkey = function_keys.keys()
     functionkey = input('Please select function analysis, or type "help" for help \n')
+    obtusekey = 0
+    acutekey = 0
     while not functionkey in listofkey:
         if functionkey == "help":
             print("To select function analysis, choose one of the following functions:")
@@ -62,12 +64,14 @@ def askkey():
             elif acutekey == "help":
                 print("To select function analysis, choose one of the following functions:")
                 print(listofkey)
-                acutekey = input('Please select function analysis for obtuse angles, or type "help" for help \n')
+                acutekey = input('Please select function analysis for acute angles, or type "help" for help \n')
             else:
                 acutekey = input('Your function key is invalid. Please enter a valid function key, or type "help" for more info \n')
+        if acutekey == obtusekey:
+            print("Your obtuse function key and acute function key are the same. \nThis is not recommended, but calculations will proceed")
 
 
-    return functionkey
+    return functionkey,obtusekey,acutekey
 
 
 
