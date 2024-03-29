@@ -40,6 +40,16 @@ def OpenCSV():
     for x in data:
         return data
 
+def DataReader(my_file):
+    data = my_file.read().split()
+    for i in range(len(data)):
+        point = data[i].split(',')
+        x = float(point[0]); y = float(point[1])
+        data[i] = [x, y]
+    for x in data:
+        return data
+
+
 def WriteCSV(XSC):
     '''writes input list of list to csv file at user specified location'''
     new_file = filedialog.asksaveasfile(parent=window,
