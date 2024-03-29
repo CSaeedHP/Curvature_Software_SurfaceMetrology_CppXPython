@@ -5,14 +5,18 @@ import os
 
 root = Tk()
 
-filevar = StringVar()
+filename = StringVar()
 
-myLabel = Label(root, textvariable=filevar)
-myLabel.pack()
-filevar.set("select file")
-myLabel.pack()
+filelabel = Label(root, textvariable=filename)
+filelabel.pack()
+filename.set("select file")
+filelabel.pack()
 
-def updatelabel():
+
+fileobject = Variable()
+fileobject.set(False)
+
+def filelabeling():
     file = filedialog.askopenfile(parent=root,
                                   initialdir="",
                                   title="Select A File",
@@ -20,13 +24,19 @@ def updatelabel():
                                                ("Text files", "*.txt"), 
                                                ("All files", "*")))
     if file:
-        filevar.set(os.path.abspath(file.name))
+        filename.set(os.path.abspath(file.name))
+        fileobject.set(file)
         return
-    filevar.set("No file selected")
+    filename.set("No file selected")
+    fileobject.set(False)
     
-mybutton = Button(root,text = "Select file",command = updatelabel)
-mybutton.pack()
+filebutton = Button(root,text = "Select file",command = filelabeling)
+filebutton.pack()
 
 
+def checkfile():
+    print(fileobject.get())
+checkfilebutton = Button(root,text = "check file", command = checkfile)
+checkfilebutton.pack()
 
 root.mainloop()
