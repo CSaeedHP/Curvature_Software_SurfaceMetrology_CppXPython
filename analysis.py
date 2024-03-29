@@ -138,59 +138,30 @@ def get_actual():
 
 #returns percent error (0-100) between two given values
 def error_calculation(calculated, theoretical):
-    perc_error  = abs(calculated-theoretical)/theoretical
+    perc_error  = abs((calculated-theoretical)/theoretical) * 100
     return perc_error
 
 
-
-
 def percent_error(xsc, curv_theoretical):
-    # x_positions = xsc[0][:] #array of x positions
-    # curv_calculated = xsc[1][:] #array of calculated curvature values
-    # scales = xsc[2][:] #array of scales
-    x_positions = [row[0] for row in xsc]
-    scales = [row[1] for row in xsc]
-    curv_calculated = [row[2] for row in xsc]
-    curv_theoretical = curv_theoretical[2:len(curv_theoretical)-1][:] #
-    columns = len(x_positions)
+    #inputs: XSC (x, scale, curv), Theoretical curvature (x, Curv)
+    #return: XSPE (x, scale, percent_error)
+    XSPE = []
 
-    PE = []
-    search = 1
-    indexlimits = []
+    #Iterate through positons
+    i = 0
 
-    while search < columns:
-        if scales[search] == scales[search+1]:
-            indexlimits = [indexlimits, search]
-        search = search + 1
-    
-    iteration = 0
-    act_curv_val_index = 0
-    ili = 0
-    subiteration = 0
-
-    [row1, column1] = len(indexlimits)
-    
-    while iteration < columns:
-        #Actualcurvature rows change, not columns (column 1 = x_pos position, column 2 = curvature) 
-        if((ili < search) and (ili <= column1) and (iteration == indexlimits(ili))):
-            while((curv_theoretical(subiteration) != x_positions(iteration))):
-                act_curv_val_index = (curv_theoretical(subiteration) == x_positions(iteration))
-                subiteration += 1
-            subiteration = 0
-            ili += 1
-
-        PE[iteration] = (abs((curv_theoretical(act_curv_val_index, 2) - curv_calculated(iteration))/(curv_theoretical(act_curv_val_index, 2)))*100)
-
-        act_curv_val_index += 1
-        iteration += 1
-    
-        while((curv_theoretical(subiteration) != x_positions(iteration))):
-            act_curv_val_index = (curv_theoretical(subiteration) == x_positions(iteration))
-            subiteration += 1
-        subiteration = 0
-        ili += 1
-        PE[iteration] = (abs((curv_theoretical(act_curv_val_index, 2) - curv_calculated(iteration))/(curv_theoretical(act_curv_val_index, 2)))*100)
-
-    return PE
-
+    while i < len(xsc):
+            position = xsc[i][0]
+            #index = curv_theoretical[0].index(position)
+            index = 0
+            while (index <= len(curv_theoretical)) and (curv_theoretical[index][0] != position):
+                index += 1
+            #index = curv_theoretical[:,0].index(position)
+            expected_curvature = curv_theoretical[index][1]
+            calculated_curvature = xsc[i][2]
+            perc_error = error_calculation(calculated_curvature, expected_curvature)
+            XSPE.append([position, xsc[i][1], perc_error])
+            i += 1
+    print(XSPE)
+    return XSPE
 
