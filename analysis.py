@@ -138,30 +138,33 @@ def get_actual():
 
 #returns percent error (0-100) between two given values
 def error_calculation(calculated, theoretical):
-    perc_error  = abs((calculated-theoretical)/theoretical) * 100
+    perc_error  = abs(calculated-theoretical)/theoretical
     return perc_error
+
+
 
 
 def percent_error(xsc, curv_theoretical):
     #inputs: XSC (x, scale, curv), Theoretical curvature (x, Curv)
     #return: XSPE (x, scale, percent_error)
     XSPE = []
-
+    
     #Iterate through positons
     i = 0
-
-    while i < len(xsc):
-            position = xsc[i][0]
-            #index = curv_theoretical[0].index(position)
-            index = 0
-            while (index <= len(curv_theoretical)) and (curv_theoretical[index][0] != position):
-                index += 1
-            #index = curv_theoretical[:,0].index(position)
-            expected_curvature = curv_theoretical[index][1]
-            calculated_curvature = xsc[i][2]
-            perc_error = error_calculation(calculated_curvature, expected_curvature)
-            XSPE.append([position, xsc[i][1], perc_error])
-            i += 1
-    print(XSPE)
-    return XSPE
+    with alive_bar(len(xsc))as bar:
+        while i < len(xsc):
+                position = xsc[i][0]
+                #index = curv_theoretical[0].index(position)
+                index = 0
+                while (index <= len(curv_theoretical)) and (curv_theoretical[index][0] != position):
+                    index += 1
+                #index = curv_theoretical[:,0].index(position)
+                expected_curvature = curv_theoretical[index][1]
+                calculated_curvature = xsc[i][2]
+                perc_error = error_calculation(calculated_curvature, expected_curvature)
+                XSPE.append([position, xsc[i][1], perc_error])
+                i += 1
+                bar()
+                
+        return XSPE
 
