@@ -79,26 +79,75 @@ def DataReader(my_file):
     for x in data:
         return data
 
+
+#minimum bound logic
+def checkbound(a,b,c):
+    global minboundmessage
+    string_number = minimumentry.get()
+    if string_number == "":
+        minboundmessage.set("Please input a minimum bound.")
+        return
+    try:
+        float_number = float(string_number)
+        minboundmessage.set("Valid minimum bound!")
+    except ValueError:
+        minboundmessage.set(f"Cannot convert '{string_number}' to a number.")
+
+
 entrynumber = StringVar()
-minimumbound = Label(root, text = "insert minimum bound below")
+minboundmessage = StringVar()
+
+
+minboundmessage.set("insert minimum bound below")
+minimumbound = Label(root, textvariable = minboundmessage)
 minimumentry = Entry(root, textvariable = entrynumber, width = 50, borderwidth = 1)
-entrynumber.trace_add("write", )
+entrynumber.trace_add("write",checkbound)
 
 
 minimumbound.pack()
 minimumentry.pack()
 
+#maximum bound logic
 
-sv = StringVar()
-sv.trace("w", lambda name, index, mode, sv=sv: callback(sv))
-e = Entry(root, textvariable=sv)
-e.pack()
+def maxcheckbound(a,b,c):
+    global maxboundmessage
+    string_number = maximumentry.get()
+    if string_number == "":
+        maxboundmessage.set("Please input a maximum bound.")
+        return
+    try:
+        float_number = float(string_number)
+        maxboundmessage.set("Valid maximum bound!")
+    except ValueError:
+        maxboundmessage.set(f"Cannot convert '{string_number}' to a number.")
 
-def checkbound():
-    print(type(minimumentry.get()))
 
-boundbutton = Button(root, text = "check bound type", command = checkbound)
-boundbutton.pack()
+maxentrynumber = StringVar()
+maxboundmessage = StringVar()
+
+
+maxboundmessage.set("insert maximum bound below")
+maximumbound = Label(root, textvariable = maxboundmessage)
+maximumentry = Entry(root, textvariable = maxentrynumber, width = 50, borderwidth = 1)
+maxentrynumber.trace_add("write",maxcheckbound)
+
+
+maximumbound.pack()
+maximumentry.pack()
+
+
+#end bounding logic
+
+#begin autoset
+def autosetbounds():
+    print("")
+
+
+resetboundbutton = Button(root, text = "automatically set bounds", command = autosetbounds)
+resetboundbutton.pack()
+
+
+
 # e = Entry(root, width = 50,borderwidth = 100)
 # e.pack()
 # e.insert(0,"default value")
