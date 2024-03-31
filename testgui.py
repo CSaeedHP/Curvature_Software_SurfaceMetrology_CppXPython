@@ -28,7 +28,6 @@ function_keys = {
     "diffslope" : "diff_slope",
     "calculus" : "quad_curvature",
     "3lag" : "oriented_lagrangian",
-    "fda" : "fin_diff_slope",
     "hybrid": "parse_hybrid_data"
 }
 listofkey = list(function_keys.keys()) #used in reference for dropdown menu

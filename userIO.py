@@ -1,5 +1,4 @@
-from tkinter import filedialog
-import tkinter
+
 import math
 
 import numpy as np
@@ -8,11 +7,6 @@ import matplotlib.pyplot as plt
 from analysis import *
 import time
 
-tkinter.Tk().withdraw()
-def fileselect():
-    '''opens computer file dialogue window'''
-    fileToOpen =filedialog.askopenfile()
-    return fileToOpen
 
 function_keys = {
     "herons" : "herons_curvature",

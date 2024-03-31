@@ -39,6 +39,26 @@ def OpenCSV():
         data[i] = [x, y]
     for x in data:
         return data
+    
+def OpenCSVexceptionhandler():
+    my_file = filedialog.askopenfile(parent=window,
+                                  initialdir="",
+                                  title="Select A File",
+                                  filetypes = (("CSV files (Comma separated value)", "*.csv"),
+                                               ("Text files", "*.txt"), 
+                                               ("All files", "*")))
+    data = my_file.read().split()
+    for i in range(len(data)):
+        point = data[i].split(',')
+        try:
+            x = float(point[0]); y = float(point[1])
+        except ValueError:
+            print("Value error")
+            return
+        data[i] = [x, y]
+    for x in data:
+        return data
+
 
 def DataReader(my_file):
     data = my_file.read().split()

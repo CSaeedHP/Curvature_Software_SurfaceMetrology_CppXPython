@@ -19,17 +19,6 @@ data = 0
 
 
 
-# root = Tk()
-# var = StringVar()
-# var.set('hello')
-
-# l = Label(root, textvariable = var)
-# l.pack()
-
-# t = Entry(root, textvariable = var)
-# t.pack()
-
-
 
 function_keys = {
     "herons" : "herons_curvature",
@@ -42,8 +31,15 @@ function_keys = {
 listofkey = list(function_keys.keys())
 
 
+var = StringVar()
+
+myLabel = Label(root, textvariable=var)
+myLabel.pack()
+var.set("select file")
+
+
 def GUIopenFile():
-    global data,var
+    
     file = filedialog.askopenfile(parent=root,
                                   initialdir="",
                                   title="Select A File",
@@ -69,10 +65,6 @@ def FunctionKeySelect(event):
     print(FunctionCombo.get())
 
 
-var = StringVar()
-var.set("select file")
-myLabel = Label(root,textvariable = var)
-myLabel.pack()
 
 
 #functionkey selection dropdown
