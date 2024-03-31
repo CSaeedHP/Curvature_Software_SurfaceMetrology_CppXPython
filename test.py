@@ -32,11 +32,9 @@ print(len(XSC)) #debug purposes check len xsc
 # if totalops > 1000000:
 #     print("Note: graphing not recommended with large amounts of data.") totalops unfinished
 
-
 #here is error analysis
-if userIO.YesNo("Perform error analysis? "):
-    theoretical_curvatures = filehandling.OpenCSV()
-    analysis.percent_error(XSC,theoretical_curvatures)
+error_analysis = userIO.YesNo("Perform error analysis? ")
+
 
 graphon = userIO.YesNo("Graph 3d plot?")
 
@@ -57,6 +55,14 @@ if graphon:
         # display.plotly3d(samplepoints)
         display3d = display.plot3d(XSC)
 
+
+if error_analysis:
+    theoretical_curvatures = filehandling.OpenCSV()
+    XSPE = analysis.percent_error(XSC,theoretical_curvatures)
+    plt.figure(3)
+    display.plot3d(XSPE)
+
+    
 plt.show(block = False)
 if userIO.YesNo("Save File?"):
     print("saving file...")
