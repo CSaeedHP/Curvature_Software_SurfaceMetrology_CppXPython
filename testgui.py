@@ -1,11 +1,25 @@
 from tkinter import *
 from tkinter import ttk
 from tkinter import filedialog
+from tkinter import messagebox
 import os
 import csv
 import userIO
+import analysis
+import display
+import math
+import matplotlib.pyplot as plt
+import matplotlib as mpl
 root = Tk()
 root.title("curvature project development")
+
+
+#structure of code:
+#code is divided into various sections, in a specifc order to ensure functionality of code.
+#constants --> defined at the beginning
+#variables --> defined, and some have default values set at the beginning
+#functions --> defined using the variables and constants above
+#ui elements --> defined, some of which call functions and rely upon the previously defined variables
 
 #CONSTANTS
 
@@ -29,22 +43,27 @@ fileobject.set(False) #returns false if no object set yet
 
 minentrynumber = StringVar() #number for lower bound
 minboundmessage = StringVar() #message for lower bound
-minboundmessage.set("Insert minimum bound below.") #default value before user input
+minboundmessage.set("Please select a file first.") #default value before user input
 
 maxentrynumber = StringVar() #number for upper bound
 maxboundmessage = StringVar() #message for upper bound
-maxboundmessage.set("Insert maximum bound below.") #default value before user input
+maxboundmessage.set("Please select a file first.") #default value before user input
+
+minboundvalidity = BooleanVar()
+maxboundvalidity = BooleanVar()
 
 
 automin = DoubleVar() #minimum possible 
 automax = DoubleVar() #maximum possible
 
-
+XSC = Variable()
 
 
 
 #DEFINE FUNCTIONS HERE
-def filelabeling():
+def filelabeling(): #used with select file button and filelabel
+    '''mutates fileobject into data if valid file is inputted
+    sets filelabel to path of file, fileobject is false if bad file'''
     file = filedialog.askopenfile(parent=root,
                                   initialdir="",
                                   title="Select A File",
@@ -53,13 +72,19 @@ def filelabeling():
                                                ("All files", "*")))
     if file:
         filename.set(os.path.abspath(file.name))
-        data = file.read().split()
+        try:
+            data = file.read().split()
+        except UnicodeDecodeError:
+            filename.set("Unicode error: Data File Incompatible!") #handles incompatible files
+            fileobject.set(False)
+            return
         for i in range(len(data)):
             point = data[i].split(',')
             try:
                 x = float(point[0]); z = float(point[1])
             except ValueError:
-                filename.set("Data File Incompatible!") #handles incompatible files
+                filename.set("Field error: Data File Incompatible!") #handles incompatible files
+                fileobject.set(False)
                 return
             data[i] = [x, z]
         fileobject.set(data)
@@ -70,6 +95,8 @@ def filelabeling():
         automax.set(datamax)
         minboundmessage.set("Please input a minimum bound.")
         maxboundmessage.set("Please input a maximum bound.")
+        maxboundvalidity.set(1)
+        minboundvalidity.set(1)
 
         return
     filename.set("No file selected")
@@ -77,7 +104,7 @@ def filelabeling():
     
 
 # for debugging purposes
-def checkfile():
+def checkfile(): #check file button
     print(fileobject.get())
 
 
@@ -89,7 +116,7 @@ def checkfile():
 
 
 
-def FunctionKeySelect(event):
+def FunctionKeySelect(event): #may not have a use, for functioncombo
     print(FunctionCombo.get())
 
 
@@ -98,7 +125,7 @@ def FunctionKeySelect(event):
 
 # working 2
 
-def DataReader(my_file):
+def DataReader(my_file): #unused
     data = my_file.read().split()
     for i in range(len(data)):
         point = data[i].split(',')
@@ -107,7 +134,7 @@ def DataReader(my_file):
     for x in data:
         return data
 
-def checkValidDoubleEntry(entry): #helper function to check if valid double input
+def checkValidDoubleEntry(entry): #helper function to check if valid double input in minbound and maxbound
     try:
         float_number = float(entry)
         return True
@@ -116,13 +143,14 @@ def checkValidDoubleEntry(entry): #helper function to check if valid double inpu
     
 
 
-def mincheckbound(a,b,c):
+def mincheckbound(a,b,c): #used with minbound and maxbound
     global minboundmessage
     string_number = minimumentry.get()
     if a:
         maxcheckbound(0,0,0) # runs maxcheckbound without running mincheckbound again (prevent infininte loop)
     if string_number == "":
         minboundmessage.set("Please input a minimum bound.")
+        minboundvalidity.set(0)
         return
     try:
         float_number = float(string_number)
@@ -130,18 +158,23 @@ def mincheckbound(a,b,c):
             if float_number == automin.get():
                 maxboundmessage.set("Please increase your maximum bound.")
                 minboundmessage.set("Minimum bound cannot be decreased further.")
+                minboundvalidity.set(0)
                 return
             minboundmessage.set(f"Your minimum bound must be less than your maximum bound.")
+            minboundvalidity.set(0)
             return
         if float_number < automin.get():
             minboundmessage.set(f"Your minimum bound cannot be less than {automin.get()}")
+            minboundvalidity.set(0)
             return
         if float_number > automax.get():
             minboundmessage.set(f"Your minimum bound cannot be greater than {automax.get()}")
+            minboundvalidity.set(0)
             return
         
 
         minboundmessage.set("Valid minimum bound!")
+        minboundvalidity.set(1)
 
     except ValueError:
         minboundmessage.set(f"Cannot convert '{string_number}' to a number.")
@@ -154,7 +187,7 @@ def mincheckbound(a,b,c):
 
 #maximum bound logic
 
-def maxcheckbound(a,b,c):
+def maxcheckbound(a,b,c): #used with maxbound, minbound
     global maxboundmessage
     if a:
         print("run mincheckbound")
@@ -162,6 +195,7 @@ def maxcheckbound(a,b,c):
     string_number = maximumentry.get()
     if string_number == "":
         maxboundmessage.set("Please input a maximum bound.")
+        maxboundvalidity.set(0)
         return
     try:
         float_number = float(string_number)
@@ -169,16 +203,21 @@ def maxcheckbound(a,b,c):
             if float_number == automax.get():
                 minboundmessage.set("Please decrease your minimum bound.")
                 maxboundmessage.set("Maximum bound cannot be increased further.")
+                maxboundvalidity.set(0)
                 return
             maxboundmessage.set(f"Your maximum bound must be greater than your minimum bound.")
+            maxboundvalidity.set(0)
             return
         if float_number < automin.get():
             maxboundmessage.set(f"Your maximum bound cannot be less than {automin.get()}")
+            maxboundvalidity.set(0)
             return
         if float_number > automax.get():
             maxboundmessage.set(f"Your maximum bound cannot be greater than {automax.get()}")
+            maxboundvalidity.set(0)
             return
         maxboundmessage.set("Valid maximum bound!")
+        maxboundvalidity.set(1)
         
         
     except ValueError:
@@ -192,33 +231,83 @@ def maxcheckbound(a,b,c):
 #end bounding logic
 
 #begin autoset
-def autosetbounds():
+def autosetbounds(): #used with automatically reset button
     maxentrynumber.set(automax.get())
     minentrynumber.set(automin.get())
     minboundmessage.set(f"Automatically set to minimum of {automin.get()}")
     maxboundmessage.set(f"Automatically set to maximum of {automax.get()}")
 
 
+def startanalysis():
+    if not fileobject.get():
+        fileerror = messagebox.showwarning(title = "Analysis not started", message = "Data file missing or invalid. Please select another data file.")
+        return
+    if not minboundvalidity.get() or  not maxboundvalidity.get():
+        bounderror = messagebox.showwarning(title = "Analysis not started", message = "Please check your bounds before continuing, or use the autoset button.")
+        return
+    scale_user_lower = math.floor(float(minimumentry.get())/automin.get())
+    scale_user_upper = math.ceil(float(maximumentry.get())/automin.get())
+    print(scale_user_lower)
+    print(scale_user_upper)
+    xsc1 = analysis.parse_data(fileobject.get(),FunctionCombo.get(),scale_user_lower,scale_user_upper)
+    XSC.set(xsc1)
+    print("calculating")
+    
+    
+def plot3d(XSC):
+    
+    '''plot a set of points for curvature'''
+    userlog = False
+    labelpadsize = 40
+    axes_font = 40
+    plt.rcParams['font.size'] = 20
+    X = [row[0] for row in XSC]
+    S = [row[1] for row in XSC]
+    C = [row[2] for row in XSC]
+    ax = plt.axes(projection='3d')
+    
+    colors = plt.cm.turbo(C)
+    ax.scatter3D(X,S,C,c=colors)
+    ax.set_xlabel('X Position', labelpad=labelpadsize)
+    if userlog:
+        ax.set_ylabel('log(Scale)', labelpad=labelpadsize)
+    else:
+        ax.set_ylabel('Scale', labelpad=labelpadsize)
+    ax.set_zlabel('Curvature', labelpad=labelpadsize)
+    plt.colorbar(mpl.cm.ScalarMappable(cmap='turbo'), ax=ax, orientation='vertical', label='Curvature')
+    return ax
+
+
+
+def graphdata():
+    data = XSC.get()
+    if data:
+        plot3d(data)
+        plt.show(block = False)
+        return
+    else:
+        grapherror = messagebox.showerror(title = "Graphing failed", message = "Please perform an analysis before graphing.")
 
 
 
 #UI ELEMENTS GO HERE
     
+filelabel = Label(root, textvariable=filename)
+    
 filebutton = Button(root,text = "Select file",command = filelabeling)
 
 
-filelabel = Label(root, textvariable=filename)
 
 checkfilebutton = Button(root,text = "check file", command = checkfile)
 
 
 minimumbound = Label(root, textvariable = minboundmessage)
 minimumentry = Entry(root, textvariable = minentrynumber, width = 50, borderwidth = 1)
-minentrynumber.trace_add("write",mincheckbound)
+
 
 maximumbound = Label(root, textvariable = maxboundmessage)
 maximumentry = Entry(root, textvariable = maxentrynumber, width = 50, borderwidth = 1)
-maxentrynumber.trace_add("write",maxcheckbound)
+
 
 
 
@@ -226,18 +315,19 @@ maxentrynumber.trace_add("write",maxcheckbound)
 
 FunctionCombo = ttk.Combobox(root, value = listofkey)
 FunctionCombo.current(0)
-FunctionCombo.bind("<<ComboboxSelected>>", FunctionKeySelect)
-
-
 
 resetboundbutton = Button(root, text = "automatically set bounds", command = autosetbounds)
 
+analysisbutton = Button(root,text = "start curvature analysis", command = startanalysis)
+
+graphbutton = Button(root, text = "Graph curvature data", command = graphdata)
+
 #CALL FUNCTIONS BASED ON USER INTERACTION
+minentrynumber.trace_add("write",mincheckbound)
+maxentrynumber.trace_add("write",maxcheckbound)
+FunctionCombo.bind("<<ComboboxSelected>>", FunctionKeySelect)
 
-
-
-
-#PACKING ELEMENTS
+#PACKING ELEMENTS, determines packing order
 filelabel.pack()
 filebutton.pack()
 checkfilebutton.pack()
@@ -252,6 +342,8 @@ maximumentry.pack()
 
 resetboundbutton.pack()
 
+analysisbutton.pack()
+graphbutton.pack()
 # e = Entry(root, width = 50,borderwidth = 100)
 # e.pack()
 # e.insert(0,"default value")
