@@ -40,6 +40,12 @@ filename.set("select file") #default value
 fileobject = Variable() #initial x-z data points
 fileobject.set(False) #returns false if no object set yet
 
+standardmenu = StringVar()
+standardmenu.set("Analysis method")
+
+hybridmenu = StringVar()
+hybridmenu.set("Hybrid mode not active")
+
 minentrynumber = StringVar() #number for lower bound
 minboundmessage = StringVar() #message for lower bound
 minboundmessage.set("Please select a file first.") #default value before user input
@@ -54,6 +60,12 @@ maxboundvalidity = BooleanVar()
 
 automin = DoubleVar() #minimum possible 
 automax = DoubleVar() #maximum possible
+
+radiovalue = IntVar()
+radiovalue.set("0")
+
+hybrid = BooleanVar()
+
 
 XSC = Variable()
 
@@ -75,7 +87,12 @@ def filelabeling(): #used with select file button and filelabel
             data = file.read().split()
         except UnicodeDecodeError:
             filename.set("Unicode error: Data File Incompatible!") #handles incompatible files
-            fileobject.set(False)
+            fileobject.set(False) 
+            minentrynumber.set("")
+            maxentrynumber.set("")
+            minboundmessage.set("Please select a file.")
+            maxboundmessage.set("Please select a file.")
+            disablebounds()
             return
         for i in range(len(data)):
             point = data[i].split(',')
@@ -83,7 +100,12 @@ def filelabeling(): #used with select file button and filelabel
                 x = float(point[0]); z = float(point[1])
             except ValueError:
                 filename.set("Field error: Data File Incompatible!") #handles incompatible files
+                minentrynumber.set("")
+                maxentrynumber.set("")
+                minboundmessage.set("Please select a file.")
+                maxboundmessage.set("Please select a file.")
                 fileobject.set(False)
+                disablebounds()
                 return
             data[i] = [x, z]
         fileobject.set(data)
@@ -96,10 +118,16 @@ def filelabeling(): #used with select file button and filelabel
         maxboundmessage.set("Please input a maximum bound.")
         maxboundvalidity.set(1)
         minboundvalidity.set(1)
-
+        enablebounds()
         return
+    
+    minentrynumber.set("")
+    maxentrynumber.set("")
+    minboundmessage.set("Please select a file.")
+    maxboundmessage.set("Please select a file.")
     filename.set("No file selected")
     fileobject.set(False)
+    disablebounds() 
     
 
 # for debugging purposes
@@ -111,6 +139,19 @@ def checkfile(): #check file button
 
 
 #start post working1 modifications, dropdown function options
+
+
+def radioclick():
+    value = radiovalue.get()
+    if value:
+        standardmenu.set("Hybrid Obtuse analysis method")
+        hybridmenu.set("Hybrid Acute analysis method")
+        FunctionHybrid["state"] = NORMAL
+    else:
+        standardmenu.set("Analysis method")
+        hybridmenu.set("Hybrid mode not active")
+        FunctionHybrid["state"] = DISABLED
+
 
 
 
@@ -237,6 +278,16 @@ def autosetbounds(): #used with automatically reset button
     maxboundmessage.set(f"Automatically set to maximum of {automax.get()}")
 
 
+def enablebounds():
+    minimumentry["state"]=NORMAL
+    maximumentry["state"]=NORMAL
+    resetboundbutton["state"]=NORMAL
+def disablebounds():
+    minimumentry["state"]=DISABLED
+    maximumentry["state"]=DISABLED
+    resetboundbutton["state"]=DISABLED
+
+
 def startanalysis():
     if not fileobject.get():
         fileerror = messagebox.showwarning(title = "Analysis not started", message = "Data file missing or invalid. Please select another data file.")
@@ -288,6 +339,9 @@ def graphdata():
         grapherror = messagebox.showerror(title = "Graphing failed", message = "Please perform an analysis before graphing.")
 
 
+#DEFINING STATES
+
+
 
 #UI ELEMENTS GO HERE
     
@@ -300,8 +354,14 @@ filebutton = Button(root,text = "Select file",command = filelabeling)
 checkfilebutton = Button(root,text = "check file", command = checkfile)
 
 
+standardbutton = Radiobutton(root, text="Standard Analysis",variable=radiovalue, value = 0, command = radioclick)
+hybridbutton = Radiobutton(root, text="Hybrid Analysis",variable=radiovalue, value = 1, command = radioclick)
+
+
+
 minimumbound = Label(root, textvariable = minboundmessage)
 minimumentry = Entry(root, textvariable = minentrynumber, width = 50, borderwidth = 1)
+
 
 
 maximumbound = Label(root, textvariable = maxboundmessage)
@@ -309,11 +369,16 @@ maximumentry = Entry(root, textvariable = maxentrynumber, width = 50, borderwidt
 
 
 
-
-
+StandardObtuseLabel = Label(root, textvariable = standardmenu)
 
 FunctionCombo = ttk.Combobox(root, value = listofkey)
 FunctionCombo.current(0)
+
+HybridAcuteLabel = Label(root, textvariable = hybridmenu)
+
+FunctionHybrid = ttk.Combobox(root, value = listofkey)
+FunctionHybrid.current(0)
+
 
 resetboundbutton = Button(root, text = "automatically set bounds", command = autosetbounds)
 
@@ -331,7 +396,15 @@ filelabel.pack()
 filebutton.pack()
 checkfilebutton.pack()
 
+
+standardbutton.pack()
+hybridbutton.pack()
+
+
+StandardObtuseLabel.pack()
 FunctionCombo.pack()
+HybridAcuteLabel.pack()
+FunctionHybrid.pack()
 
 
 minimumbound.pack()
@@ -343,6 +416,14 @@ resetboundbutton.pack()
 
 analysisbutton.pack()
 graphbutton.pack()
+
+
+#STATE
+
+FunctionHybrid["state"] = DISABLED
+minimumentry["state"] = DISABLED
+maximumentry["state"] = DISABLED
+
 # e = Entry(root, width = 50,borderwidth = 100)
 # e.pack()
 # e.insert(0,"default value")
