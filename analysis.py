@@ -3,6 +3,8 @@ from tests import *
 import numpy as np
 import functions_class
 from alive_progress import alive_bar;
+from tkinter import ttk
+import tkinter as tk
 #pip install alive-progress
 
 #putting all the functions inside a dictionary
@@ -11,7 +13,8 @@ function_keys = {
     "diffslope" : "diff_slope",
     "calculus" : "quad_curvature",
     "3lag" : "oriented_lagrangian",
-    "fda" : "fin_diff_slope"
+    "fda" : "fin_diff_slope",
+    "AcuteTest" : "isObtuse"
 }
 
 #this processes all the curvatures
@@ -53,6 +56,48 @@ def parse_data(data,functionkey,min,max):
                 XSC.append([X, S, C])
             scale += 1
             bar()
+    return XSC
+
+def GUIparse_data(data,functionkey,min,max):
+    '''takes in points data, and a function key. Returns n by 3 array, columns are X values, Scales, and Curvatures'''
+    #pass in function key here
+    #dictionary reference goes here
+
+    #define curvature function to be used here
+    progress = 0
+    popup = tk.Toplevel()
+    tk.Label(popup, text = "Curvature analysis in progress...").pack()
+    progress_var = tk.DoubleVar()
+    progress_bar = ttk.Progressbar(popup, variable = progress_var, maximum = max - min + 1)
+    progress_bar.pack()
+    
+
+
+    choicefunction = getattr(functions_class,function_keys[functionkey])
+    # points_org = []
+    XSC = [] #X is X positions, S is scales, C is curvatures
+    min_length_interval = (data[1][0] - data[0][0])
+    datamax = len(data)
+    scale = min
+
+    while scale <= max:
+        # if 2*scale + 1 > n: # make conditon, while co ndition?
+        #     break
+        # points_org.append([]) deprecated
+        S = scale * min_length_interval
+        for i in range(0, datamax - 2*scale):
+            #points is what gets passed into the curvature function
+            # points = [[data[i][0], data[i][1]], [data[i + scale][0], data[i + scale][1]], [data[i + 2 * scale][0], data[i + 2 * scale][1]]]
+            
+            X = data[i + scale][0] #points[1][0]
+            
+            C = choicefunction(data[i][0], data[i][1], X, data[i + scale][1], data[i + 2 * scale][0], data[i + 2 * scale][1])
+            XSC.append([X, S, C])
+        scale += 1
+        popup.update()
+        progress += 1
+        progress_var.set(progress)
+    popup.destroy()
     return XSC
 
 def parse_hybrid_data(data,obtusekey,acutekey,min,max):

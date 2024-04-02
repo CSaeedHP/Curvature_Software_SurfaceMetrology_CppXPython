@@ -28,7 +28,8 @@ function_keys = {
     "diffslope" : "diff_slope",
     "calculus" : "quad_curvature",
     "3lag" : "oriented_lagrangian",
-    "hybrid": "parse_hybrid_data"
+    "fda" : "fin_diff_slope",
+    "AcuteTest" : "isObtuse"
 }
 listofkey = list(function_keys.keys()) #used in reference for dropdown menu
 
@@ -146,7 +147,7 @@ def radioclick():
     if value:
         standardmenu.set("Hybrid Obtuse analysis method")
         hybridmenu.set("Hybrid Acute analysis method")
-        FunctionHybrid["state"] = NORMAL
+        FunctionHybrid["state"] = "readonly"
     else:
         standardmenu.set("Analysis method")
         hybridmenu.set("Hybrid mode not active")
@@ -277,7 +278,7 @@ def autosetbounds(): #used with automatically reset button
     minboundmessage.set(f"Automatically set to minimum of {automin.get()}")
     maxboundmessage.set(f"Automatically set to maximum of {automax.get()}")
 
-
+#enable and disable bound ui elements
 def enablebounds():
     minimumentry["state"]=NORMAL
     maximumentry["state"]=NORMAL
@@ -299,10 +300,11 @@ def startanalysis():
     scale_user_upper = math.ceil(float(maximumentry.get())/automin.get())
     print(scale_user_lower)
     print(scale_user_upper)
-    xsc1 = analysis.parse_data(fileobject.get(),FunctionCombo.get(),scale_user_lower,scale_user_upper)
+    xsc1 = analysis.GUIparse_data(fileobject.get(),FunctionCombo.get(),scale_user_lower,scale_user_upper)
     XSC.set(xsc1)
-    print("calculating")
-    
+
+
+
     
 def plot3d(XSC):
     
@@ -371,12 +373,12 @@ maximumentry = Entry(root, textvariable = maxentrynumber, width = 50, borderwidt
 
 StandardObtuseLabel = Label(root, textvariable = standardmenu)
 
-FunctionCombo = ttk.Combobox(root, value = listofkey)
+FunctionCombo = ttk.Combobox(root, value = listofkey, state="readonly")
 FunctionCombo.current(0)
 
 HybridAcuteLabel = Label(root, textvariable = hybridmenu)
 
-FunctionHybrid = ttk.Combobox(root, value = listofkey)
+FunctionHybrid = ttk.Combobox(root, value = listofkey,state="readonly")
 FunctionHybrid.current(0)
 
 
@@ -419,7 +421,6 @@ graphbutton.pack()
 
 
 #STATE
-
 FunctionHybrid["state"] = DISABLED
 minimumentry["state"] = DISABLED
 maximumentry["state"] = DISABLED
