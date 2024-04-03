@@ -421,6 +421,7 @@ graphbutton.pack()
 
 
 #STATE
+#sets default state of ui elements upon initialization
 FunctionHybrid["state"] = DISABLED
 minimumentry["state"] = DISABLED
 maximumentry["state"] = DISABLED
