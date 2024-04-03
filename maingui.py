@@ -11,9 +11,10 @@ import math
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 root = Tk()
+root.wm_attributes('-topmost', 1)
 root.title("curvature project development")
-
-
+root.iconbitmap("icon.ico")
+root.wm_iconbitmap("icon.ico")
 #structure of code:
 #code is divided into various sections, in a specifc order to ensure functionality of code.
 #constants --> defined at the beginning
@@ -35,8 +36,11 @@ listofkey = list(function_keys.keys()) #used in reference for dropdown menu
 
 
 #VARIABLES SECTION
-filename = StringVar() #name of file to be displayed at top of function
+filename = StringVar() #path of file to be displayed at top of function
 filename.set("select file") #default value
+
+
+filenamesolo = StringVar() #name of file
 
 fileobject = Variable() #initial x-z data points
 fileobject.set(False) #returns false if no object set yet
@@ -66,6 +70,15 @@ radiovalue = IntVar()
 radiovalue.set("0")
 
 hybrid = BooleanVar()
+
+LogScaleOn = BooleanVar()
+
+LogAbsCurvatureOn = BooleanVar()
+
+
+analysisdetails = StringVar()
+analysisdetails.set("No analysis stored")
+
 
 
 XSC = Variable()
@@ -120,6 +133,9 @@ def filelabeling(): #used with select file button and filelabel
         maxboundvalidity.set(1)
         minboundvalidity.set(1)
         enablebounds()
+        plt.figure("input profile")
+        plot2d(data)
+        filenamesolo.set(os.path.basename(file.name))
         return
     
     minentrynumber.set("")
@@ -133,7 +149,12 @@ def filelabeling(): #used with select file button and filelabel
 
 # for debugging purposes
 def checkfile(): #check file button
-    print(fileobject.get())
+    '''debugging purposes only'''
+    if fileobject.get():
+        print(fileobject.get())
+        plot2d(fileobject.get())
+    else:
+        nofile = messagebox.showwarning("No file", "No file selected")
 
 
 
@@ -143,6 +164,7 @@ def checkfile(): #check file button
 
 
 def radioclick():
+    '''toggles betweeen hybrid on and hybrrid off'''
     value = radiovalue.get()
     if value:
         standardmenu.set("Hybrid Obtuse analysis method")
@@ -158,6 +180,7 @@ def radioclick():
 
 
 def FunctionKeySelect(event): #may not have a use, for functioncombo
+    '''currently unused'''
     print(FunctionCombo.get())
 
 
@@ -166,16 +189,9 @@ def FunctionKeySelect(event): #may not have a use, for functioncombo
 
 # working 2
 
-def DataReader(my_file): #unused
-    data = my_file.read().split()
-    for i in range(len(data)):
-        point = data[i].split(',')
-        x = float(point[0]); y = float(point[1])
-        data[i] = [x, y]
-    for x in data:
-        return data
 
 def checkValidDoubleEntry(entry): #helper function to check if valid double input in minbound and maxbound
+    '''check valid double.'''
     try:
         float_number = float(entry)
         return True
@@ -185,6 +201,7 @@ def checkValidDoubleEntry(entry): #helper function to check if valid double inpu
 
 
 def mincheckbound(a,b,c): #used with minbound and maxbound
+    '''checks the entry field of the minimum entry box. changes the corresponding messagebox accordingly.'''
     global minboundmessage
     string_number = minimumentry.get()
     if a:
@@ -229,6 +246,7 @@ def mincheckbound(a,b,c): #used with minbound and maxbound
 #maximum bound logic
 
 def maxcheckbound(a,b,c): #used with maxbound, minbound
+    '''checks validity of the bound upon editing of the entry field for maximum. changes message box accordingly'''
     global maxboundmessage
     if a:
         print("run mincheckbound")
@@ -273,6 +291,7 @@ def maxcheckbound(a,b,c): #used with maxbound, minbound
 
 #begin autoset
 def autosetbounds(): #used with automatically reset button
+    '''used to automatically set the bounds based on valid minimum and maximum of the input data'''
     maxentrynumber.set(automax.get())
     minentrynumber.set(automin.get())
     minboundmessage.set(f"Automatically set to minimum of {automin.get()}")
@@ -280,16 +299,19 @@ def autosetbounds(): #used with automatically reset button
 
 #enable and disable bound ui elements
 def enablebounds():
+    '''used to enable the bound entry fields'''
     minimumentry["state"]=NORMAL
     maximumentry["state"]=NORMAL
     resetboundbutton["state"]=NORMAL
 def disablebounds():
+    '''used to disable the bound entry fields'''
     minimumentry["state"]=DISABLED
     maximumentry["state"]=DISABLED
     resetboundbutton["state"]=DISABLED
 
 
 def startanalysis():
+    ''' checks for validity of the input paramaters, and then performs either standard or hybrid analysis'''
     if not fileobject.get():
         fileerror = messagebox.showwarning(title = "Analysis not started", message = "Data file missing or invalid. Please select another data file.")
         return
@@ -300,22 +322,35 @@ def startanalysis():
     scale_user_upper = math.ceil(float(maximumentry.get())/automin.get())
     print(scale_user_lower)
     print(scale_user_upper)
-    xsc1 = analysis.GUIparse_data(fileobject.get(),FunctionCombo.get(),scale_user_lower,scale_user_upper)
+    if radiovalue.get():
+        xsc1 = analysis.GUI_parse_hybrid_data(fileobject.get(),FunctionCombo.get(),FunctionHybrid.get(),scale_user_lower,scale_user_upper)
+        analysisdetails.set(f"{filenamesolo.get()}_Hybrid_{FunctionCombo.get()}_{FunctionHybrid.get()}_{minentrynumber.get()}_to_{maxentrynumber.get()}")
+        
+    else:
+        xsc1 = analysis.GUIparse_data(fileobject.get(),FunctionCombo.get(),scale_user_lower,scale_user_upper)
+        analysisdetails.set(f"{filenamesolo.get()}_Standard_{FunctionCombo.get()}_{minentrynumber.get()}_to_{maxentrynumber.get()}")
+    
     XSC.set(xsc1)
 
 
 
     
-def plot3d(XSC):
+def plot3d(XSC,LogScale,LogABSCurvature):
     
-    '''plot a set of points for curvature'''
+    '''plot a set of points for curvature. Options are for Log of the scale and log of absolute value of curvature'''
     userlog = False
     labelpadsize = 40
     axes_font = 40
     plt.rcParams['font.size'] = 20
     X = [row[0] for row in XSC]
-    S = [row[1] for row in XSC]
-    C = [row[2] for row in XSC]
+    if LogScale:
+        S = [math.log10(row[1]) for row in XSC]
+    else:
+        S = [row[1] for row in XSC]
+    if LogABSCurvature:
+        C = [math.log10(abs(row[2])) for row in XSC]
+    else:
+        C = [row[2] for row in XSC]
     ax = plt.axes(projection='3d')
     
     colors = plt.cm.turbo(C)
@@ -329,16 +364,64 @@ def plot3d(XSC):
     plt.colorbar(mpl.cm.ScalarMappable(cmap='turbo'), ax=ax, orientation='vertical', label='Curvature')
     return ax
 
-
+def plot2d(input_array):
+    '''plots a 2d array of the inputted data.'''
+    # fig, axs = plt.subplots(2)
+# ax = axs[0]
+# ax = plt.axes(projection='3d')
+# ax2 = axs[1]
+# ax.grid()
+    plt.figure(1)
+    plt.rcParams['font.size'] = 20
+    X = [row[0] for row in input_array]
+    Y = [row[1] for row in input_array]
+    ax = plt.axes()
+    ax.grid()
+    ax.scatter(X,Y)
+    ax.set_xlabel('X position', labelpad = 20)
+    ax.set_ylabel('Height', labelpad = 20)
+    plt.show(block = False)
+    return ax
+    
 
 def graphdata():
+    plt.figure("Position, Curvature, Scale")
     data = XSC.get()
     if data:
-        plot3d(data)
+        plot3d(data,LogScaleOn.get(),LogAbsCurvatureOn.get())
         plt.show(block = False)
         return
     else:
         grapherror = messagebox.showerror(title = "Graphing failed", message = "Please perform an analysis before graphing.")
+
+
+
+#defines quit logic
+def quit_me():
+    print('quit')
+    root.quit()
+    root.destroy()
+
+
+#save file
+def WriteCSV():
+    '''writes input list of list to csv file at user specified location'''
+    file = XSC.get()
+    if file:
+        new_file = filedialog.asksaveasfile(parent=root,
+                                            initialdir="",
+                                            title="Save as",
+                                            filetypes = (("CSV files (Comma separated value)", "*.csv"),
+                                                ("Text files", "*.txt"), 
+                                                ("All files", "*")))
+        if new_file:
+            writer = csv.writer(new_file)
+            writer.writerows(file)
+            
+    else:
+        warning =messagebox.showwarning("No analysis stored","No analysis available to save")
+
+
 
 
 #DEFINING STATES
@@ -352,41 +435,55 @@ filelabel = Label(root, textvariable=filename)
 filebutton = Button(root,text = "Select file",command = filelabeling)
 
 
-
+#debugging button
 checkfilebutton = Button(root,text = "check file", command = checkfile)
 
-
+#standard/hybrid analysis
 standardbutton = Radiobutton(root, text="Standard Analysis",variable=radiovalue, value = 0, command = radioclick)
 hybridbutton = Radiobutton(root, text="Hybrid Analysis",variable=radiovalue, value = 1, command = radioclick)
 
-
-
-minimumbound = Label(root, textvariable = minboundmessage)
-minimumentry = Entry(root, textvariable = minentrynumber, width = 50, borderwidth = 1)
-
-
-
-maximumbound = Label(root, textvariable = maxboundmessage)
-maximumentry = Entry(root, textvariable = maxentrynumber, width = 50, borderwidth = 1)
-
-
-
+#standard/obtuse box
 StandardObtuseLabel = Label(root, textvariable = standardmenu)
-
 FunctionCombo = ttk.Combobox(root, value = listofkey, state="readonly")
 FunctionCombo.current(0)
-
+#hybridacute box
 HybridAcuteLabel = Label(root, textvariable = hybridmenu)
-
 FunctionHybrid = ttk.Combobox(root, value = listofkey,state="readonly")
 FunctionHybrid.current(0)
 
-
+#bounds
+minimumbound = Label(root, textvariable = minboundmessage)
+minimumentry = Entry(root, textvariable = minentrynumber, width = 50, borderwidth = 1)
+maximumbound = Label(root, textvariable = maxboundmessage)
+maximumentry = Entry(root, textvariable = maxentrynumber, width = 50, borderwidth = 1)
 resetboundbutton = Button(root, text = "automatically set bounds", command = autosetbounds)
 
+
+
+
+
+
+
+
+
+#analysis
+analysisLabel = Label(root, textvariable = analysisdetails)
 analysisbutton = Button(root,text = "start curvature analysis", command = startanalysis)
 
+
+#graphing
 graphbutton = Button(root, text = "Graph curvature data", command = graphdata)
+Graphoptions = Label(root, text = "Graphing options")
+LogBox = Checkbutton(root, text = "Logarithmic Scale", variable = LogScaleOn, onvalue = 1, offvalue = 0)
+LogAbsCurvature = Checkbutton(root, text = "Log|curvature|", variable = LogAbsCurvatureOn, onvalue = 1, offvalue = 0)
+
+
+#savefile
+savebutton = Button(root, text = "save analysis", command = WriteCSV)
+
+
+
+
 
 #CALL FUNCTIONS BASED ON USER INTERACTION
 minentrynumber.trace_add("write",mincheckbound)
@@ -417,14 +514,26 @@ maximumentry.pack()
 resetboundbutton.pack()
 
 analysisbutton.pack()
-graphbutton.pack()
+analysisLabel.pack()
 
+
+
+Graphoptions.pack()
+LogBox.pack()
+LogAbsCurvature.pack()
+graphbutton.pack()
+savebutton.pack()
 
 #STATE
 #sets default state of ui elements upon initialization
+
+root.protocol("WM_DELETE_WINDOW", quit_me) #defines what happens on closing
+
+
 FunctionHybrid["state"] = DISABLED
 minimumentry["state"] = DISABLED
 maximumentry["state"] = DISABLED
+
 
 # e = Entry(root, width = 50,borderwidth = 100)
 # e.pack()
