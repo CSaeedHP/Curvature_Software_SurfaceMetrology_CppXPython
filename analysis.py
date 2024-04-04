@@ -22,12 +22,14 @@ function_keys = {
 #returns the curvature of a given 2d array of 3 points
 #functionally hybrid, work is needed
 
-
+def trunkate_float(value, places):
+    multiplier = 10 ** int(places)
+    return int(multiplier*value)/multiplier
 
 
 #data is a two dimensional list of points
 #points_org is a 4-d list (1st level: scales; 2nd level: set of 3 points (this will later be converted into curvatures); 3rd level: x,y coordinates of a single point)
-def parse_data(data,functionkey,min,max):
+def parse_data(data,functionkey,min,max, dec_places):
     '''takes in points data, and a function key. Returns n by 3 array, columns are X values, Scales, and Curvatures'''
     #pass in function key here
     #dictionary reference goes here
@@ -53,6 +55,9 @@ def parse_data(data,functionkey,min,max):
                 X = data[i + scale][0] #points[1][0]
                 
                 C = choicefunction(data[i][0], data[i][1], X, data[i + scale][1], data[i + 2 * scale][0], data[i + 2 * scale][1])
+
+                C = trunkate_float(C, dec_places)
+
                 XSC.append([X, S, C])
             scale += 1
             bar()
@@ -222,13 +227,9 @@ def get_spacing():
     return data[1][0] - data[0][0]
 
 
-
-
 #returns the actual curvature data for the test sample
 def get_actual():
     return format_data("sineC.txt")
-
-
 
 
 #returns percent error (0-100) between two given values
@@ -237,29 +238,28 @@ def error_calculation(calculated, theoretical):
     return perc_error
 
 
-
-
-def percent_error(xsc, curv_theoretical):
+def percent_error(xsc, curv_theoretical, listshrink):
     #inputs: XSC (x, scale, curv), Theoretical curvature (x, Curv)
     #return: XSPE (x, scale, percent_error)
     XSPE = []
-    
+    i = 0
+    while i < listshrink-1:
+        curv_theoretical = curv_theoretical[1:-1]
+        i += 1
     #Iterate through positons
     i = 0
+    CT_index = 0
     with alive_bar(len(xsc))as bar:
         while i < len(xsc):
+                if (CT_index == len(curv_theoretical)):
+                    curv_theoretical = curv_theoretical[1:-1]
+                    CT_index = 0
                 position = xsc[i][0]
-                #index = curv_theoretical[0].index(position)
-                index = 0
-                while (index <= len(curv_theoretical)) and (curv_theoretical[index][0] != position):
-                    index += 1
-                #index = curv_theoretical[:,0].index(position)
-                expected_curvature = curv_theoretical[index][1]
+                expected_curvature = curv_theoretical[CT_index][1]
                 calculated_curvature = xsc[i][2]
                 perc_error = error_calculation(calculated_curvature, expected_curvature)
                 XSPE.append([position, xsc[i][1], perc_error])
                 i += 1
+                CT_index += 1
                 bar()
-                
         return XSPE
-

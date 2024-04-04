@@ -139,29 +139,16 @@ def get_user_range(input_array):
     else:
         print("even number of datapoints")
         print(f"{evendata(maxscale,usermin,usermax)} total operations in progress")
-    return usermin,usermax
+    return usermin,usermax, min_length_interval
 
-
-
-
-
-
-
-
-# def ops(datanumber):
-#     totaloperations = datanumber^2
-#     print(datanumber)
-#     if datanumber%2 == 1:
-#         totaloperations = datanumber * datanumber
-#     else:
-#         totaloperations = datanumber * (datanumber + 1)
-#     print(totaloperations)
-#     return totaloperations
 def totalCurvaturesScales(data,min,max):
     datamax = len(data)
     totalops = ((ops(datamax - 2*min) - ops(datamax - 2*max)))/4
     print("analyzing data...")
     print(f"{totalops} curvatures calculating...\n{max-min+1} scales calculating...")
     return totalops
-# totalops = ((ops(10001 - 2) - ops(10001-10000)))
-# print(totalops)
+
+def ask_trunkation():
+    if YesNo("Do you want to trunkate output curvature?"):
+        return input("Please insert the amount of decimal places:")
+    return 4

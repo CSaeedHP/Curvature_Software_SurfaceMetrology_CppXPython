@@ -58,8 +58,6 @@ import userIO
 # print("process finished in %s", time.time()-start_time)
 
 
-
-
 def plot3d(XSC):
     
     '''plot a set of points for curvature'''
