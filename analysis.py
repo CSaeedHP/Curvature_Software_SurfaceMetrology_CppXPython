@@ -1,4 +1,3 @@
-
 from tests import *
 import numpy as np
 import functions_class
@@ -243,7 +242,7 @@ def percent_error(xsc, curv_theoretical, listshrink):
     #return: XSPE (x, scale, percent_error)
     XSPE = []
     i = 0
-    while i < listshrink-1:
+    while i < listshrink:
         curv_theoretical = curv_theoretical[1:-1]
         i += 1
     #Iterate through positons

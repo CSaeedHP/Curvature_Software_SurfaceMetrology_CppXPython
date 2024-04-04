@@ -58,9 +58,8 @@ if graphon:
 
 
 if error_analysis:
-    listshrink = user_min/min_scale
     theoretical_curvatures = filehandling.OpenCSV()
-    XSPE = analysis.percent_error(XSC,theoretical_curvatures, listshrink)
+    XSPE = analysis.percent_error(XSC,theoretical_curvatures, user_min)
     plt.figure(3)
     display.plot3d(XSPE)
 
