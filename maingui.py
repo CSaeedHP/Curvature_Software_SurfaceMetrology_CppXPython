@@ -15,6 +15,7 @@ root.wm_attributes('-topmost', 1)
 root.title("curvature project development")
 root.iconbitmap("icon.ico")
 root.wm_iconbitmap("icon.ico")
+root.minsize(400,600)
 #structure of code:
 #code is divided into various sections, in a specifc order to ensure functionality of code.
 #constants --> defined at the beginning
@@ -54,6 +55,7 @@ hybridmenu.set("Hybrid mode not active")
 minentrynumber = StringVar() #number for lower bound
 minboundmessage = StringVar() #message for lower bound
 minboundmessage.set("Please select a file first.") #default value before user input
+minimumcached = DoubleVar()
 
 maxentrynumber = StringVar() #number for upper bound
 maxboundmessage = StringVar() #message for upper bound
@@ -133,8 +135,7 @@ def filelabeling(): #used with select file button and filelabel
         maxboundvalidity.set(1)
         minboundvalidity.set(1)
         enablebounds()
-        plt.figure("input profile")
-        plot2d(data)
+        plot2d(data,"input profile")
         filenamesolo.set(os.path.basename(file.name))
         return
     
@@ -152,7 +153,7 @@ def checkfile(): #check file button
     '''debugging purposes only'''
     if fileobject.get():
         print(fileobject.get())
-        plot2d(fileobject.get())
+        plot2d(fileobject.get(),1)
     else:
         nofile = messagebox.showwarning("No file", "No file selected")
 
@@ -316,6 +317,7 @@ def startanalysis():
         return #checks bound validity
     scale_user_lower = math.floor(float(minimumentry.get())/automin.get())
     scale_user_upper = math.ceil(float(maximumentry.get())/automin.get())
+    minimumcached.set(scale_user_lower)
     print(scale_user_lower)
     print(scale_user_upper)
     if radiovalue.get():
@@ -331,9 +333,9 @@ def startanalysis():
 
 
     
-def plot3d(XSC,LogScale,LogABSCurvature):
+def plot3d(XSC,LogScale,LogABSCurvature,title):
     #initial declaration of the figure
-    ThreeDplot = plt.figure("Position, Scale, Curvature")
+    ThreeDplot = plt.figure(title)
     '''plot a set of points for curvature. Options are for Log of the scale and log of absolute value of curvature'''
 
     #i have no idea what these do
@@ -363,22 +365,24 @@ def plot3d(XSC,LogScale,LogABSCurvature):
         theplot.set_ylabel('log(Scale)', labelpad=labelpadsize)
     else:
         theplot.set_ylabel('Scale', labelpad=labelpadsize)
-    theplot.set_zlabel('Curvature', labelpad=labelpadsize)
+    if title == "Position, Scale, Percent Error":
+        theplot.set_zlable('Percent Error', labelpad = labelpadsize)
+    else:
+        theplot.set_zlabel('Curvature', labelpad=labelpadsize)
     plt.colorbar(scatter, ax = theplot, label = "Curvature", ticklocation = 'auto')
     theplot.locator_params(nbins = 5)
     #colorbar = plt.colorbar(mpl.cm.ScalarMappable(cmap='turbo'), ax=theplot, orientation='vertical', label='Curvature')
     plt.show(block = False)
-    
     return theplot
 
-def plot2d(input_array):
+def plot2d(input_array,fignumber):
     '''plots a 2d array of the inputted data.'''
     # fig, axs = plt.subplots(2)
 # ax = axs[0]
 # ax = plt.axes(projection='3d')
 # ax2 = axs[1]
 # ax.grid()
-    plt.figure(1)
+    plt.figure(fignumber)
     plt.rcParams['font.size'] = 20
     X = [row[0] for row in input_array]
     Y = [row[1] for row in input_array]
@@ -394,7 +398,7 @@ def plot2d(input_array):
 def graphdata():
     data = XSC.get()
     if data:
-        plot3d(data,LogScaleOn.get(),LogAbsCurvatureOn.get())
+        plot3d(data,LogScaleOn.get(),LogAbsCurvatureOn.get(),"Position, Scale, Curvature")
         return
     else:
         grapherror = messagebox.showerror(title = "Graphing failed", message = "Please perform an analysis before graphing.")
@@ -418,13 +422,13 @@ def WriteCSV():
                                             title="Save as",
                                             filetypes = (("CSV files (Comma separated value)", "*.csv"),
                                                 ("Text files", "*.txt"), 
-                                                ("All files", "*")))
+                                                ("All files", "*")),defaultextension="*.*")
         if new_file:
             writer = csv.writer(new_file)
             writer.writerows(file)
             
     else:
-        warning =messagebox.showwarning("No analysis stored","No analysis available to save")
+        warning =messagebox.showwarning("No file stored","No file available to save")
 
 
 
@@ -546,15 +550,23 @@ maximumentry["state"] = DISABLED
 
 
 #popup window for error analysis
-def open_popup_error_analysis():
-    popup = Toplevel(root)
-    popup.title("Error analysis")
 
-    theoreticaldataname = Variable()
-    theoreticallabel = StringVar()
-    theoreticalfileobject = Variable()
-    theoryfilenamesolo = StringVar()
-    def errorselectfile():
+
+popup = Toplevel(root)
+popup.wm_attributes('-topmost', 1)
+popup.minsize(400,400)
+popup.title("Error analysis")
+popup.withdraw()
+ErrorData = Variable()
+theoreticaldataname = Variable()
+theoreticallabel = StringVar()
+theoreticalfileobject = Variable()
+theoryfilenamesolo = StringVar()
+
+
+
+
+def errorselectfile():
         file = filedialog.askopenfile(parent=popup,
                                     initialdir="",
                                     title="Select A File",
@@ -579,21 +591,82 @@ def open_popup_error_analysis():
                     return
                 data[i] = [x, z]
             theoreticalfileobject.set(data)
-            plt.figure("theoretical curvatures")
-            plot2d(data)
+            plot2d(data,"theoretical curvatures")
             theoryfilenamesolo.set(os.path.basename(file.name))
             return
-    TheoreticalFileLabel = Label(popup, textvariable= theoreticaldataname)
-    ErrorFileButton = Button(popup, text = "select error analysis file", command = errorselectfile)
-    StartErrorAnalysisButton = Button(popup, text = "Start Error Analysis")
+        
+def performerroranalysis():
+    if theoreticalfileobject.get() and XSC.get():
+        ErrorData.set(analysis.GUI_percent_error(XSC.get(),theoreticalfileobject.get(),minimumcached.get()))
+    else:
+        nofileerror = messagebox.showerror("analysis not started", "Curvature data or measured data not detected")
 
 
-    CheckButton = Button(popup, text = "check theoretical data")
 
-    TheoreticalFileLabel.pack()
-    ErrorFileButton.pack()
-    StartErrorAnalysisButton.pack()
-    CheckButton.pack()
+
+def checkdata():
+    theoreticalfile = theoreticalfileobject.get()
+    if theoreticalfile:
+        plot2d(theoreticalfile,"theoretical curvatures")
+        return
+    else:
+        errorwindow = messagebox.showwarning("No file selected", "No curvature data has been loaded.")
+def WriteCSV():
+    '''writes input list of list to csv file at user specified location'''
+    file = XSC.get()
+    if file:
+        new_file = filedialog.asksaveasfile(parent=popup,
+                                            initialdir="",
+                                            title="Save as",
+                                            filetypes = (("CSV files (Comma separated value)", "*.csv"),
+                                                ("Text files", "*.txt"), 
+                                                ("All files", "*")))
+        if new_file:
+            writer = csv.writer(new_file)
+            writer.writerows(file)
+            
+    else:
+        warning =messagebox.showwarning("No file stored","No file available to save")
+
+
+def graph_theoretical_comparison():
+       data = ErrorData.get()
+       if data:
+            plot3d(data,LogScaleOn.get(),LogAbsCurvatureOn.get(),"Position, Scale, Percent Error")
+            return
+       else:
+            grapherror = messagebox.showerror(title = "Graphing failed", message = "Please perform a comparison before graphing.")
+
+
+def quit_popup():
+    print('quit')
+    popup.withdraw()
+
+popup.protocol("WM_DELETE_WINDOW", quit_popup)
+def open_popup_error_analysis():
+    popup.deiconify()
+
+    
+
+
+CheckButton = Button(popup, text = "check theoretical data", command = checkdata)
+SaveDataButton = Button(popup, text = "Save file", command = WriteCSV)
+
+
+TheoreticalFileLabel = Label(popup, textvariable= theoreticaldataname)
+ErrorFileButton = Button(popup, text = "select error analysis file", command = errorselectfile)
+StartErrorAnalysisButton = Button(popup, text = "Start Error Analysis", command = performerroranalysis)
+GraphErrorAnalysisButton = Button(popup, text = "graph comparison data", command = graph_theoretical_comparison)
+TheoreticalFileLabel.pack()
+ErrorFileButton.pack()
+CheckButton.pack()
+StartErrorAnalysisButton.pack()
+GraphErrorAnalysisButton.pack()
+
+
+
+
+
 
 
     
