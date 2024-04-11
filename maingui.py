@@ -366,7 +366,7 @@ def plot3d(XSC,LogScale,LogABSCurvature,title):
     else:
         theplot.set_ylabel('Scale', labelpad=labelpadsize)
     if title == "Position, Scale, Percent Error":
-        theplot.set_zlable('Percent Error', labelpad = labelpadsize)
+        theplot.set_zlabel('Percent Error', labelpad = labelpadsize)
     else:
         theplot.set_zlabel('Curvature', labelpad=labelpadsize)
     plt.colorbar(scatter, ax = theplot, label = "Curvature", ticklocation = 'auto')
