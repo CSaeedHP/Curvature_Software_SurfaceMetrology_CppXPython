@@ -92,7 +92,7 @@ def filelabeling(): #used with select file button and filelabel
     '''mutates fileobject into data if valid file is inputted
     sets filelabel to path of file, fileobject is false if bad file'''
     file = filedialog.askopenfile(parent=root,
-                                  initialdir="",
+                                  initialdir="./",
                                   title="Select A File",
                                   filetypes = (("CSV files (Comma separated value)", "*.csv"),
                                                ("Text files", "*.txt"), 
@@ -418,7 +418,7 @@ def WriteCSV():
     file = XSC.get()
     if file:
         new_file = filedialog.asksaveasfile(parent=root,
-                                            initialdir="",
+                                            initialdir="./",
                                             title="Save as",
                                             filetypes = (("CSV files (Comma separated value)", "*.csv"),
                                                 ("Text files", "*.txt"), 
@@ -611,23 +611,6 @@ def checkdata():
         return
     else:
         errorwindow = messagebox.showwarning("No file selected", "No curvature data has been loaded.")
-def WriteCSV():
-    '''writes input list of list to csv file at user specified location'''
-    file = XSC.get()
-    if file:
-        new_file = filedialog.asksaveasfile(parent=popup,
-                                            initialdir="",
-                                            title="Save as",
-                                            filetypes = (("CSV files (Comma separated value)", "*.csv"),
-                                                ("Text files", "*.txt"), 
-                                                ("All files", "*")))
-        if new_file:
-            writer = csv.writer(new_file)
-            writer.writerows(file)
-            
-    else:
-        warning =messagebox.showwarning("No file stored","No file available to save")
-
 
 def graph_theoretical_comparison():
        data = ErrorData.get()
@@ -636,6 +619,22 @@ def graph_theoretical_comparison():
             return
        else:
             grapherror = messagebox.showerror(title = "Graphing failed", message = "Please perform a comparison before graphing.")
+def WriteCSVError():
+    '''writes input list of list to csv file at user specified location'''
+    file = ErrorData.get()
+    if file:
+        new_file = filedialog.asksaveasfile(parent=root,
+                                            initialdir="./",
+                                            title="Save as",
+                                            filetypes = (("CSV files (Comma separated value)", "*.csv"),
+                                                ("Text files", "*.txt"), 
+                                                ("All files", "*")),defaultextension="*.*")
+        if new_file:
+            writer = csv.writer(new_file)
+            writer.writerows(file)
+            
+    else:
+        warning =messagebox.showwarning("No file stored","No file available to save")
 
 
 def quit_popup():
