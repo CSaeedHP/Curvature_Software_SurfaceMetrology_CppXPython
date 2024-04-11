@@ -7,6 +7,7 @@ import numpy as np
 #returns the area of a triangle given side lengths (herons)
 def area_heron(a, b, c):
     s = (a + b + c)/2
+
     return (s * (s-a) * (s-b) * (s-c)) ** 0.5
 # 10
 
@@ -24,8 +25,52 @@ def herons_curvature(x1,z1,x2,z2,x3,z3):
     a = pythag(x1, z1, x2, z2)
     b = pythag(x1, z1, x3, z3)
     c = pythag(x2, z2, x3, z3)
+
+
+    
+
     trianglearea = area_heron(a, b, c)
+    if (z3 + z1) / 2 < z2:
+        return -4 * trianglearea / a / b / c
+    elif (z3 + z1) / 2 ==z2:
+        return 0
     return 4 * trianglearea / a / b / c
+
+
+#matlab translation
+def CurveHeron(x1,z1,x2,z2,x3,z3):
+
+    ABX = x1-x2
+    ABZ = z1-z2
+    if(ABX == 0):
+        print('Slope = undifiend')
+
+    SlopeAB = (ABZ/ABX)
+
+    BCX = x2-x3
+    BCZ = z2-z3
+    if(BCX == 0):
+        print('Slope = undifiend')
+
+    SlopeBC = (BCZ/BCX)
+
+    yfor = (SlopeAB * x3) + (z1 - (SlopeAB*x1))
+
+    if(SlopeBC == SlopeAB):
+        # print('Straight line')
+        return 0
+    elif(SlopeAB != SlopeBC):
+        sideA =((x1-x2)**2+(z1-z2)**2)**0.5
+        sideB =((x3-x2)**2+(z3-z2)**2)**0.5
+        sideC =((x1-x3)**2+(z1-z3)**2)**0.5
+    SP = ((sideA + sideB + sideC)/2)#Semi Perimeter 
+    CurveHeron = 4*(SP * (SP - sideA)**2 * (SP - sideB) * (SP - sideC))/(sideA * sideB * sideC)
+    if(z3 < yfor):
+        CurveHeron = (CurveHeron * -1)
+    return CurveHeron
+
+
+
 
 #---------------------------------------------------------------------------------------------------------------------
 #Calculus (parabola in matlab)
@@ -53,7 +98,11 @@ def quad_curvature(x1,z1,x2,z2,x3,z3):
     first_deriv = 2 * a * x + b
     second_deriv = 2 * a
     curvature = abs(second_deriv)/((1 + first_deriv**2)**1.5)
-    return curvature
+    if (z3 + z1) / 2 < z2:
+        return -4 * curvature
+    elif (z3 + z1) / 2 ==z2:
+        return 0
+    return 4 * curvature
 
 #---------------------------------------------------------------------------------------------------------------------
 # Difference of slopes

@@ -233,7 +233,7 @@ def get_actual():
 
 #returns percent error (0-100) between two given values
 def error_calculation(calculated, theoretical):
-    perc_error  = abs(calculated-theoretical)/theoretical
+    perc_error  = abs((calculated-theoretical)/theoretical)
     return perc_error
 
 

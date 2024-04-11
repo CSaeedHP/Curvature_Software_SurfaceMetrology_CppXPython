@@ -128,8 +128,8 @@ def filelabeling(): #used with select file button and filelabel
         maxentrynumber.set(datamax)
         automin.set(datamin)
         automax.set(datamax)
-        minboundmessage.set("Please input a minimum bound.")
-        maxboundmessage.set("Please input a maximum bound.")
+        minboundmessage.set("Please input a minimum scale bound.")
+        maxboundmessage.set("Please input a maximum scale bound.")
         maxboundvalidity.set(1)
         minboundvalidity.set(1)
         enablebounds()
@@ -239,10 +239,6 @@ def mincheckbound(a,b,c): #used with minbound and maxbound
     
 
 
-
-
-
-
 #maximum bound logic
 
 def maxcheckbound(a,b,c): #used with maxbound, minbound
@@ -314,10 +310,10 @@ def startanalysis():
     ''' checks for validity of the input paramaters, and then performs either standard or hybrid analysis'''
     if not fileobject.get():
         fileerror = messagebox.showwarning(title = "Analysis not started", message = "Data file missing or invalid. Please select another data file.")
-        return
+        return #check to see if file exists for analysis
     if not minboundvalidity.get() or  not maxboundvalidity.get():
         bounderror = messagebox.showwarning(title = "Analysis not started", message = "Please check your bounds before continuing, or use the autoset button.")
-        return
+        return #checks bound validity
     scale_user_lower = math.floor(float(minimumentry.get())/automin.get())
     scale_user_upper = math.ceil(float(maximumentry.get())/automin.get())
     print(scale_user_lower)
@@ -336,33 +332,44 @@ def startanalysis():
 
     
 def plot3d(XSC,LogScale,LogABSCurvature):
-    
+    #initial declaration of the figure
+    ThreeDplot = plt.figure("Position, Scale, Curvature")
     '''plot a set of points for curvature. Options are for Log of the scale and log of absolute value of curvature'''
-    userlog = False
-    labelpadsize = 40
-    axes_font = 40
-    plt.rcParams['font.size'] = 20
+
+    #i have no idea what these do
+    labelpadsize = 10
+    plt.rcParams['font.size'] = 10
+
+    #X positions
     X = [row[0] for row in XSC]
-    if LogScale:
+
+
+    if LogScale: #applies logarithmic scale
         S = [math.log10(row[1]) for row in XSC]
     else:
         S = [row[1] for row in XSC]
-    if LogABSCurvature:
+    if LogABSCurvature: #applies log abs curvature
         C = [math.log10(abs(row[2])) for row in XSC]
     else:
         C = [row[2] for row in XSC]
-    ax = plt.axes(projection='3d')
-    
+
+
+    theplot = plt.axes(projection='3d')
     colors = plt.cm.turbo(C)
-    ax.scatter3D(X,S,C,c=colors)
-    ax.set_xlabel('X Position', labelpad=labelpadsize)
-    if userlog:
-        ax.set_ylabel('log(Scale)', labelpad=labelpadsize)
+    colors2 = plt.get_cmap('turbo')
+    scatter = theplot.scatter3D(X,S,C,c = C, cmap = colors2)
+    theplot.set_xlabel('X Position', labelpad=labelpadsize)
+    if LogScale:
+        theplot.set_ylabel('log(Scale)', labelpad=labelpadsize)
     else:
-        ax.set_ylabel('Scale', labelpad=labelpadsize)
-    ax.set_zlabel('Curvature', labelpad=labelpadsize)
-    plt.colorbar(mpl.cm.ScalarMappable(cmap='turbo'), ax=ax, orientation='vertical', label='Curvature')
-    return ax
+        theplot.set_ylabel('Scale', labelpad=labelpadsize)
+    theplot.set_zlabel('Curvature', labelpad=labelpadsize)
+    plt.colorbar(scatter, ax = theplot, label = "Curvature", ticklocation = 'auto')
+    theplot.locator_params(nbins = 5)
+    #colorbar = plt.colorbar(mpl.cm.ScalarMappable(cmap='turbo'), ax=theplot, orientation='vertical', label='Curvature')
+    plt.show(block = False)
+    
+    return theplot
 
 def plot2d(input_array):
     '''plots a 2d array of the inputted data.'''
@@ -385,11 +392,9 @@ def plot2d(input_array):
     
 
 def graphdata():
-    plt.figure("Position, Curvature, Scale")
     data = XSC.get()
     if data:
         plot3d(data,LogScaleOn.get(),LogAbsCurvatureOn.get())
-        plt.show(block = False)
         return
     else:
         grapherror = messagebox.showerror(title = "Graphing failed", message = "Please perform an analysis before graphing.")
@@ -538,4 +543,73 @@ maximumentry["state"] = DISABLED
 # e = Entry(root, width = 50,borderwidth = 100)
 # e.pack()
 # e.insert(0,"default value")
+
+
+
+def open_popup_error_analysis():
+    popup = Toplevel(root)
+    popup.title("Error analysis")
+
+    theoreticaldataname = Variable()
+    theoreticallabel = StringVar()
+    theoreticalfileobject = Variable()
+    theoryfilenamesolo = StringVar()
+    def errorselectfile():
+        file = filedialog.askopenfile(parent=popup,
+                                    initialdir="",
+                                    title="Select A File",
+                                    filetypes = (("CSV files (Comma separated value)", "*.csv"),
+                                                ("Text files", "*.txt"), 
+                                                ("All files", "*")))
+        if file:
+            theoreticaldataname.set(os.path.abspath(file.name))
+            try:
+                data = file.read().split()
+            except UnicodeDecodeError:
+                theoreticaldataname.set("Unicode error: Data File Incompatible!") #handles incompatible files
+                theoreticalfileobject.set(False) 
+                return
+            for i in range(len(data)):
+                point = data[i].split(',')
+                try:
+                    x = float(point[0]); z = float(point[1])
+                except ValueError:
+                    theoreticallabel.set("Field error: Data File Incompatible!") #handles incompatible files
+                    theoreticalfileobject.set(False)
+                    return
+                data[i] = [x, z]
+            theoreticalfileobject.set(data)
+            plt.figure("theoretical curvatures")
+            plot2d(data)
+            theoryfilenamesolo.set(os.path.basename(file.name))
+            return
+    TheoreticalFileLabel = Label(popup, textvariable= theoreticaldataname)
+    ErrorFileButton = Button(popup, text = "select error analysis file", command = errorselectfile)
+    StartErrorAnalysisButton = Button(popup, text = "Start Error Analysis")
+
+
+    CheckButton = Button(popup, text = "check theoretical data")
+
+    TheoreticalFileLabel.pack()
+    ErrorFileButton.pack()
+    StartErrorAnalysisButton.pack()
+    CheckButton.pack()
+    
+
+    
+
+ErrorAnalysisButton = Button(root, text = "Error Analysis", command = open_popup_error_analysis)
+
+
+ErrorAnalysisButton.pack()
+
+
+
+
+
+
+
+
+
+
 root.mainloop()
