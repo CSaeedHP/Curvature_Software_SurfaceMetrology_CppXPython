@@ -11,7 +11,7 @@ import math
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 root = Tk()
-root.wm_attributes('-topmost', 1)
+root.wm_attributes('-topmost', 0)
 root.title("curvature project development")
 root.iconbitmap("icon.ico")
 root.wm_iconbitmap("icon.ico")
@@ -553,7 +553,7 @@ maximumentry["state"] = DISABLED
 
 
 popup = Toplevel(root)
-popup.wm_attributes('-topmost', 1)
+popup.wm_attributes('-topmost', 0)
 popup.minsize(400,400)
 popup.title("Error analysis")
 popup.withdraw()
