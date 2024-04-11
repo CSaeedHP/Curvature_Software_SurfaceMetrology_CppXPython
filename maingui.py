@@ -545,7 +545,7 @@ maximumentry["state"] = DISABLED
 # e.insert(0,"default value")
 
 
-
+#popup window for error analysis
 def open_popup_error_analysis():
     popup = Toplevel(root)
     popup.title("Error analysis")
@@ -594,7 +594,7 @@ def open_popup_error_analysis():
     ErrorFileButton.pack()
     StartErrorAnalysisButton.pack()
     CheckButton.pack()
-    
+
 
     
 

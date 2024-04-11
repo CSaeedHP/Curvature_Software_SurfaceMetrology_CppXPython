@@ -262,3 +262,28 @@ def percent_error(xsc, curv_theoretical, listshrink):
                 CT_index += 1
                 bar()
         return XSPE
+def GUI_percent_error(xsc, curv_theoretical, listshrink):
+    #inputs: XSC (x, scale, curv), Theoretical curvature (x, Curv)
+    #return: XSPE (x, scale, percent_error)
+    XSPE = []
+    i = 0
+    while i < listshrink:
+        curv_theoretical = curv_theoretical[1:-1]
+        i += 1
+    #Iterate through positons
+    i = 0
+    CT_index = 0
+    with alive_bar(len(xsc))as bar:
+        while i < len(xsc):
+                if (CT_index == len(curv_theoretical)):
+                    curv_theoretical = curv_theoretical[1:-1]
+                    CT_index = 0
+                position = xsc[i][0]
+                expected_curvature = curv_theoretical[CT_index][1]
+                calculated_curvature = xsc[i][2]
+                perc_error = error_calculation(calculated_curvature, expected_curvature)
+                XSPE.append([position, xsc[i][1], perc_error])
+                i += 1
+                CT_index += 1
+                bar()
+        return XSPE
