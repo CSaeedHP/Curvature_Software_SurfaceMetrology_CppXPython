@@ -10,6 +10,8 @@ import display
 import math
 import matplotlib.pyplot as plt
 import matplotlib as mpl
+import numpy as np
+import random
 root = Tk()
 root.wm_attributes('-topmost', 0)
 root.title("curvature project development")
@@ -81,7 +83,7 @@ LogAbsCurvatureOn = BooleanVar()
 analysisdetails = StringVar()
 analysisdetails.set("No analysis stored")
 
-
+dpstring = StringVar()
 
 XSC = Variable()
 
@@ -153,7 +155,7 @@ def checkfile(): #check file button
     '''debugging purposes only'''
     if fileobject.get():
         print(fileobject.get())
-        plot2d(fileobject.get(),1)
+        plot2d(fileobject.get(),"input profile")
     else:
         nofile = messagebox.showwarning("No file", "No file selected")
 
@@ -337,7 +339,7 @@ def plot3d(XSC,LogScale,LogABSCurvature,title):
     #initial declaration of the figure
     ThreeDplot = plt.figure(title)
     '''plot a set of points for curvature. Options are for Log of the scale and log of absolute value of curvature'''
-
+    print(len(XSC))
     #i have no idea what these do
     labelpadsize = 10
     plt.rcParams['font.size'] = 10
@@ -354,12 +356,15 @@ def plot3d(XSC,LogScale,LogABSCurvature,title):
         C = [math.log10(abs(row[2])) for row in XSC]
     else:
         C = [row[2] for row in XSC]
-
+    # Xarr = np.asarray(X)
+    # Sarr = np.asarray(S)
+    # Carr = np.asarray(C)
 
     theplot = plt.axes(projection='3d')
     colors = plt.cm.turbo(C)
     colors2 = plt.get_cmap('turbo')
     scatter = theplot.scatter3D(X,S,C,c = C, cmap = colors2)
+    # scatter = theplot.plot_trisurf(Xarr,Sarr,Carr, cmap = colors2)
     theplot.set_xlabel('X Position', labelpad=labelpadsize)
     if LogScale:
         theplot.set_ylabel('log(Scale)', labelpad=labelpadsize)
@@ -372,6 +377,7 @@ def plot3d(XSC,LogScale,LogABSCurvature,title):
     plt.colorbar(scatter, ax = theplot, label = "Curvature", ticklocation = 'auto')
     theplot.locator_params(nbins = 5)
     #colorbar = plt.colorbar(mpl.cm.ScalarMappable(cmap='turbo'), ax=theplot, orientation='vertical', label='Curvature')
+    ThreeDplot.canvas.manager.window.attributes('-topmost', 0)
     plt.show(block = False)
     return theplot
 
@@ -468,7 +474,8 @@ maximumentry = Entry(root, textvariable = maxentrynumber, width = 50, borderwidt
 resetboundbutton = Button(root, text = "automatically set bounds", command = autosetbounds)
 
 
-
+#decimal limiting
+decimalplaces = Entry(root, textvariable = dpstring)
 
 
 

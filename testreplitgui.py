@@ -1,39 +1,28 @@
-from tkinter import *
-from tkinter import ttk
+import plotly.graph_objects as go
+import pandas as pd
 
-window = Tk()
-c = 'c'
-window.attributes('-fullscreen', True)
-window.title("Very Epic Coke Machine")
-ttk.Frame(window, padding=10)
+import plotly.express as px
+#REMEMBER TO ADD HEADER!!!! DEFINE THE COLUMNS BY GIVING THEM NAMES
+df = pd.read_csv(r"C:\Users\J\Downloads\circletest2.csv")
+fig = px.scatter_3d(df, x='X', y='S', z='C')
+fig.show()
+# # Read data from a csv
+# z_data = pd.read_csv(r"C:\Users\J\Downloads\export.csv")\]=
 
-coins = []
-paidcoins = Label(window, text="Amount paid: " + str(sum(coins)) + c)
-rem = Label(window, text="Amount due: " + str(50 - sum(coins)) + c)
+# fig = go.Figure(data=go.Scatter3d(z=z_data))
+# fig.update_layout(
+#     title='Mt Bruno Elevation',
+#     width=400, height=400,
+#     margin=dict(t=40, r=0, l=20, b=20)
+# )
 
-def x():
-  global coins
-  global c
-  coins.append(5)
-  paidcoins.config(text="Amount paid: " + str(sum(coins)) + c)
-  rem.config(text="Amount due: " + str(50 - sum(coins)) + c)
-  if sum(coins) >= 50:
-    paidcoins.config(text="All paid for!")
-    if sum(coins) == 50:
-      rem.config(text="No change!")
-    elif sum(coins) > 50:
-      rem.config(text="Change: " + str(sum(coins)-50) + c)
-    nickel["state"] = DISABLED
-    dime["state"] = DISABLED
-    quarter["state"] = DISABLED
+# name = 'default'
+# # Default parameters which are used when `layout.scene.camera` is not provided
+# camera = dict(
+#     up=dict(x=0, y=0, z=1),
+#     center=dict(x=0, y=0, z=0),
+#     eye=dict(x=1.25, y=1.25, z=1.25)
+# )
 
-def y():
-  global coins
-  global c
-  coins.append(10)
-  paidcoins.config(text="Amount paid: " + str(sum(coins)) + c)
-  rem.config(text="Amount due: " + str(50 - sum(coins)) + c)
-  if sum(coins) >= 50:
-    paidcoins
-
-window.mainloop()
+# fig.update_layout(scene_camera=camera, title=name)
+# fig.show()

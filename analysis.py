@@ -270,20 +270,27 @@ def GUI_percent_error(xsc, curv_theoretical, listshrink):
     while i < listshrink:
         curv_theoretical = curv_theoretical[1:-1]
         i += 1
+    progress = 0
+    messagevar = tk.StringVar()
+    popup = tk.Toplevel()
+    tk.Label(popup, textvariable = messagevar).pack()
+    progress_var = tk.DoubleVar()
+    progress_bar = ttk.Progressbar(popup, variable = progress_var,maximum = len(xsc))
+    progress_bar.pack()
     #Iterate through positons
     i = 0
     CT_index = 0
-    with alive_bar(len(xsc))as bar:
-        while i < len(xsc):
-                if (CT_index == len(curv_theoretical)):
-                    curv_theoretical = curv_theoretical[1:-1]
-                    CT_index = 0
-                position = xsc[i][0]
-                expected_curvature = curv_theoretical[CT_index][1]
-                calculated_curvature = xsc[i][2]
-                perc_error = error_calculation(calculated_curvature, expected_curvature)
-                XSPE.append([position, xsc[i][1], perc_error])
-                i += 1
-                CT_index += 1
-                bar()
-        return XSPE
+    while i < len(xsc):
+            if (CT_index == len(curv_theoretical)):
+                curv_theoretical = curv_theoretical[1:-1]
+                CT_index = 0
+            position = xsc[i][0]
+            expected_curvature = curv_theoretical[CT_index][1]
+            calculated_curvature = xsc[i][2]
+            perc_error = error_calculation(calculated_curvature, expected_curvature)
+            XSPE.append([position, xsc[i][1], perc_error])
+            i += 1
+            CT_index += 1
+            progress_var.set(i)
+    popup.destroy()
+    return XSPE
