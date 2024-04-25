@@ -1,9 +1,49 @@
 import plotly.graph_objects as go
 import pandas as pd
+import cudf.pandas
+cudf.pandas.install
+import tkinter
+from tkinter import filedialog
+tkinter.Tk().withdraw() 
+window = tkinter.Tk()
+window.wm_attributes('-topmost', 1)
+window.withdraw()
+import os
 
 import plotly.express as px
 #REMEMBER TO ADD HEADER!!!! DEFINE THE COLUMNS BY GIVING THEM NAMES
-df = pd.read_csv(r"C:\Users\J\Downloads\circletest2.csv")
+
+
+def filelabeling(): #used with select file button and filelabel
+    '''mutates fileobject into data if valid file is inputted
+    sets filelabel to path of file, fileobject is false if bad file'''
+    file = filedialog.askopenfile(parent=window,
+                                  initialdir="./",
+                                  title="Select A File",
+                                  filetypes = (("CSV files (Comma separated value)", "*.csv"),
+                                               ("Text files", "*.txt"), 
+                                               ("All files", "*")))
+    if file:
+        return(os.path.abspath(file.name))
+    try:
+        data = file.read().split()
+    except UnicodeDecodeError:
+        print("Unicode error: Data File Incompatible!") #handles incompatible files
+        return
+    for i in range(len(data)):
+        point = data[i].split(',')
+        try:
+            x = float(point[0]); z = float(point[1])
+        except ValueError:
+            print("Field error: Data File Incompatible!") #handles incompatible files
+
+            return
+    return
+
+filename = filelabeling()
+
+
+df = pd.read_csv(rf"{filename}")
 fig = px.scatter_3d(df, x='X', y='S', z='C')
 fig.show()
 # # Read data from a csv
