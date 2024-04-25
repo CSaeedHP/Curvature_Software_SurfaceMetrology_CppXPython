@@ -12,6 +12,8 @@ import matplotlib.pyplot as plt
 import matplotlib as mpl
 import numpy as np
 import random
+
+
 root = Tk()
 root.wm_attributes('-topmost', 0)
 root.title("curvature project development")
@@ -315,7 +317,6 @@ def disablebounds():
     maximumentry["state"]=DISABLED
     resetboundbutton["state"]=DISABLED
 
-
 def startanalysis():
     ''' checks for validity of the input paramaters, and then performs either standard or hybrid analysis'''
     if not fileobject.get():
@@ -345,7 +346,6 @@ def startanalysis():
 
 
 
-    
 def plot3d(XSC,LogScale,LogABSCurvature,title,xlabel,ylabel,zlabel):
     #initial declaration of the figure
     ThreeDplot = plt.figure(title)

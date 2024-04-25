@@ -1,17 +1,19 @@
 from math import atan
 import numpy as np
+import numba
 
 #---------------------------------------------------------------------------------------------------------------------
 #Herons
 
 #returns the area of a triangle given side lengths (herons)
+@numba.njit
 def area_heron(a, b, c):
     s = (a + b + c)/2
 
     return (s * (s-a) * (s-b) * (s-c)) ** 0.5
 # 10
 
-
+@numba.njit
 #returns distance between two points
 def pythag(x1, y1, x2, y2):
     x = x2 - x1
@@ -19,7 +21,7 @@ def pythag(x1, y1, x2, y2):
     return (x**2 + y**2) ** 0.5
 # 6
 
-
+@numba.njit
 def herons_curvature(x1,z1,x2,z2,x3,z3):
     # x1 = points[0][0]; x2 = points[1][0]; x3 = points[2][0]; z1 = points[0][1]; z2 = points[1][1]; z3 = points[2][1]
     a = pythag(x1, z1, x2, z2)
@@ -36,7 +38,7 @@ def herons_curvature(x1,z1,x2,z2,x3,z3):
         return 0
     return 4 * trianglearea / a / b / c
 
-
+@numba.njit
 #matlab translation
 def CurveHeron(x1,z1,x2,z2,x3,z3):
 
@@ -74,7 +76,7 @@ def CurveHeron(x1,z1,x2,z2,x3,z3):
 
 #---------------------------------------------------------------------------------------------------------------------
 #Calculus (parabola in matlab)
-
+@numba.njit
 #finds a quadratic function that matches three points
 def find_quadratic(x1,z1,x2,z2,x3,z3):
     # x1 = points[0][0]; x2 = points[1][0]; x3 = points[2][0]; z1 = points[0][1]; z2 = points[1][1]; z3 = points[2][1]
@@ -86,7 +88,7 @@ def find_quadratic(x1,z1,x2,z2,x3,z3):
     b = np.array([z1, z2, z3])
     solution = np.linalg.solve(a, b)
     return list(solution)
-
+@numba.njit
 #uses calculus method to find curvature after fitting the points to a parabola
 def quad_curvature(x1,z1,x2,z2,x3,z3):
     # x1 = points[0][0]; x2 = points[1][0]; x3 = points[2][0]; z1 = points[0][1]; z2 = points[1][1]; z3 = points[2][1]
@@ -106,7 +108,7 @@ def quad_curvature(x1,z1,x2,z2,x3,z3):
 
 #---------------------------------------------------------------------------------------------------------------------
 # Difference of slopes
-
+@numba.njit
 def diff_slope (x1,z1,x2,z2,x3,z3):
 
     # ABX = (points[0][0]-points[1][0])
@@ -137,11 +139,13 @@ def diff_slope (x1,z1,x2,z2,x3,z3):
 
 #---------------------------------------------------------------------------------------------------------------------
 #Langrangian
+@numba.njit
 def oriented_lagrangian(x1,z1,x2,z2,x3,z3):
     return  (2*(z1)-(z2)-(z3))/((((x3) - (x1))/2)**2)
 
 #---------------------------------------------------------------------------------------------------------------------
 #fda
+@numba.njit
 def fin_dif_slope(x1,z1,x2,z2,x3,z3):
     # x1 = points[0][0]
     # x2 = points[1][0]
@@ -158,6 +162,7 @@ def fin_dif_slope(x1,z1,x2,z2,x3,z3):
 
 
 #---------------------------------------------------------------------------------------------------------------------
+@numba.njit
 def isObtuse(x1,z1,x2,z2,x3,z3):
     slope1 = (z2 - z1)/(x2 - x1)
     slope2 = (z3 - z2)/(x3 - x2)
@@ -175,13 +180,14 @@ def isObtuse(x1,z1,x2,z2,x3,z3):
 #     ...
 #     return curvature
 #---------------------------------------------------------------------------------------------------------------------
+@numba.njit
 def herons(x1,z1,x2,z2,x3,z3):
     if isObtuse(x1,z1,x2,z2,x3,z3):
         return herons_curvature(x1,z1,x2,z2,x3,z3) * (2 * sign_calc(x1,z1,x2,z2,x3,z3) - 1)
     else:
         return quad_curvature(x1,z1,x2,z2,x3,z3) * (2 * sign_calc(x1,z1,x2,z2,x3,z3) - 1)
     
-
+@numba.njit
 def sign_calc(points):
     x1 = points[0][0]; x2 = points[1][0]; x3 = points[2][0]; z1 = points[0][1]; z2 = points[1][1]; z3 = points[2][1]
     slope1 = (z2 - z1)/(x2 - x1)

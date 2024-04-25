@@ -4,6 +4,7 @@ import functions_class
 from alive_progress import alive_bar;
 from tkinter import ttk
 import tkinter as tk
+import numba
 #pip install alive-progress
 
 #putting all the functions inside a dictionary
@@ -118,6 +119,9 @@ def GUIparse_data(data,functionkey,min,max,dec_places):
         messagevar.set(f"Standard analysis in progress...\n{progress} of {maxprog}")
     popup.destroy()
     return XSC
+
+
+
 
 def parse_hybrid_data(data,obtusekey,acutekey,min,max):
     '''takes in points data, and a function key. Returns n by 3 array, columns are X values, Scales, and Curvatures'''
