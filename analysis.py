@@ -210,40 +210,6 @@ def GUI_parse_hybrid_data(data,obtusekey,acutekey,min,max,dec_places):
     popup.destroy()
     return XSC
 
-def get_curvature(data):
-    #positions is a list of lists, which each sublist represent a scale and each individual element is the central x-value for that point 
-    positions = []
-    #print(positions)
-    for scale in range(len(data)):
-        positions.append([])
-        for set in range(len(data[scale])):
-            positions[-1].append(data[scale][set][1][0])
-            data[scale][set] = curvature(data[scale][set])
-    #print(positions)
-    return [data, positions]
-
-
-
-
-#returns the average of the magnitude in % error
-def compare(data, real):
-    sum = 0
-    for i in range(len(data)):
-        sum += abs(real[i+1][1] - data[i])/real[i][1]
-    return 100 * sum/len(real)
-
-
-
-
-#gets the 'pixel length' of the data
-def get_spacing():
-    data = format_data("sineP.txt")
-    return data[1][0] - data[0][0]
-
-
-#returns the actual curvature data for the test sample
-def get_actual():
-    return format_data("sineC.txt")
 
 
 #returns percent error (0-100) between two given values
