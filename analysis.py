@@ -25,6 +25,15 @@ def trunkate_float(value, places):
     multiplier = 10 ** int(places)
     return int(multiplier*value)/multiplier
 
+def GUI_trunkate_float(value, places):
+    multiplier = 10 ** int(places)
+    try:
+        integer = int(multiplier*value)/multiplier
+        return integer
+    except:
+        toomanydecimals = tk.messagebox.showwarning(title = "too many decimals", message = "please lower amount of decimals")
+        return False
+
 
 #data is a two dimensional list of points
 #points_org is a 4-d list (1st level: scales; 2nd level: set of 3 points (this will later be converted into curvatures); 3rd level: x,y coordinates of a single point)
@@ -62,7 +71,7 @@ def parse_data(data,functionkey,min,max, dec_places):
             bar()
     return XSC
 
-def GUIparse_data(data,functionkey,min,max):
+def GUIparse_data(data,functionkey,min,max,dec_places):
     '''takes in points data, and a function key. Returns n by 3 array, columns are X values, Scales, and Curvatures'''
     #pass in function key here
     #dictionary reference goes here
@@ -98,6 +107,9 @@ def GUIparse_data(data,functionkey,min,max):
             X = data[i + scale][0] #points[1][0]
             
             C = choicefunction(data[i][0], data[i][1], X, data[i + scale][1], data[i + 2 * scale][0], data[i + 2 * scale][1])
+            C = trunkate_float(C, dec_places)
+            if not C:
+                break
             XSC.append([X, S, C])
         scale += 1
         popup.update()
@@ -147,7 +159,7 @@ def parse_hybrid_data(data,obtusekey,acutekey,min,max):
 
 
 
-def GUI_parse_hybrid_data(data,obtusekey,acutekey,min,max):
+def GUI_parse_hybrid_data(data,obtusekey,acutekey,min,max,dec_places):
     '''takes in points data, and a function key. Returns n by 3 array, columns are X values, Scales, and Curvatures'''
     #pass in function key here
     #dictionary reference goes here
@@ -186,6 +198,9 @@ def GUI_parse_hybrid_data(data,obtusekey,acutekey,min,max):
                 C = obtusefunction(x1,z1,x2,z2,x3,z3)
             else:
                 C = acutefunction(x1,z1,x2,z2,x3,z3)
+            C = trunkate_float(C, dec_places)
+            if not C:
+                break
             XSC.append([x2, S, C])
         scale += 1
         popup.update()
@@ -262,6 +277,85 @@ def percent_error(xsc, curv_theoretical, listshrink):
                 CT_index += 1
                 bar()
         return XSPE
+def GUI_percent_error2(xsc, curv_theoretical, listshrink):
+    #inputs: XSC (x, scale, curv), Theoretical curvature (x, Curv)
+    #return: XSPE (x, scale, percent_error)
+    progress = 0
+    messagevar = tk.StringVar()
+    popup2 = tk.Toplevel()
+    tk.Label(popup2, textvariable = messagevar).pack()
+    progress_var = tk.DoubleVar()
+    progress_bar = ttk.Progressbar(popup2, variable = progress_var,maximum = len(curv_theoretical)/2)
+    progress_bar.pack()
+    popup2.deiconify()
+    XSPE = []
+    i = 0
+    while i < listshrink:
+        curv_theoretical = curv_theoretical[1:-1]
+        i += 1
+    #Iterate through positons
+    i = 0
+    CT_index = 0
+    with alive_bar(len(xsc))as bar:
+        while i < len(xsc):
+                if (CT_index == len(curv_theoretical)):
+                    curv_theoretical = curv_theoretical[1:-1]
+                    CT_index = 0
+                    progress += 1
+                    progress_var.set(progress)
+                    popup2.update()
+                position = xsc[i][0]
+                expected_curvature = curv_theoretical[CT_index][1]
+                calculated_curvature = xsc[i][2]
+                perc_error = error_calculation(calculated_curvature, expected_curvature)
+                XSPE.append([position, xsc[i][1], perc_error])
+                i += 1
+                CT_index += 1
+                bar()
+        popup2.destroy()
+        return XSPE
+    
+def GUI_absolute_error2(xsc, curv_theoretical, listshrink):
+    #inputs: XSC (x, scale, curv), Theoretical curvature (x, Curv)
+    #return: XSPE (x, scale, percent_error)
+    progress = 0
+    messagevar = tk.StringVar()
+    popup2 = tk.Toplevel()
+    tk.Label(popup2, textvariable = messagevar).pack()
+    progress_var = tk.DoubleVar()
+    progress_bar = ttk.Progressbar(popup2, variable = progress_var,maximum = len(curv_theoretical)/2)
+    progress_bar.pack()
+    popup2.deiconify()
+    XSE = []
+    i = 0
+    while i < listshrink:
+        curv_theoretical = curv_theoretical[1:-1]
+        i += 1
+    #Iterate through positons
+    i = 0
+    CT_index = 0
+    with alive_bar(len(xsc))as bar:
+        while i < len(xsc):
+                if (CT_index == len(curv_theoretical)):
+                    curv_theoretical = curv_theoretical[1:-1]
+                    CT_index = 0
+                    progress += 1
+                    progress_var.set(progress)
+                    popup2.update()
+                position = xsc[i][0]
+                expected_curvature = curv_theoretical[CT_index][1]
+                calculated_curvature = xsc[i][2]
+                error = expected_curvature - calculated_curvature
+                XSE.append([position, xsc[i][1], error])
+                i += 1
+                CT_index += 1
+                bar()
+        popup2.destroy()
+        return XSE
+    
+
+    
+
 def GUI_percent_error(xsc, curv_theoretical, listshrink):
     #inputs: XSC (x, scale, curv), Theoretical curvature (x, Curv)
     #return: XSPE (x, scale, percent_error)
@@ -270,12 +364,11 @@ def GUI_percent_error(xsc, curv_theoretical, listshrink):
     while i < listshrink:
         curv_theoretical = curv_theoretical[1:-1]
         i += 1
-    progress = 0
     messagevar = tk.StringVar()
-    popup = tk.Toplevel()
-    tk.Label(popup, textvariable = messagevar).pack()
+    popup2 = tk.Toplevel()
+    tk.Label(popup2, textvariable = messagevar).pack()
     progress_var = tk.DoubleVar()
-    progress_bar = ttk.Progressbar(popup, variable = progress_var,maximum = len(xsc))
+    progress_bar = ttk.Progressbar(popup2, variable = progress_var,maximum = len(curv_theoretical))
     progress_bar.pack()
     #Iterate through positons
     i = 0
@@ -291,6 +384,7 @@ def GUI_percent_error(xsc, curv_theoretical, listshrink):
             XSPE.append([position, xsc[i][1], perc_error])
             i += 1
             CT_index += 1
+            popup2.update()
             progress_var.set(i)
-    popup.destroy()
+    popup2.destroy()
     return XSPE

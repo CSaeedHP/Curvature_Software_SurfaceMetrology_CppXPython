@@ -63,6 +63,13 @@ maxentrynumber = StringVar() #number for upper bound
 maxboundmessage = StringVar() #message for upper bound
 maxboundmessage.set("Please select a file first.") #default value before user input
 
+dpstring = StringVar() 
+decimalmessage = StringVar()
+decimalmessage.set("Round to number of decimal places")
+dpstring.set("4")
+
+decimalvalidity = BooleanVar()
+decimalvalidity.set(1)
 minboundvalidity = BooleanVar()
 maxboundvalidity = BooleanVar()
 
@@ -83,7 +90,7 @@ LogAbsCurvatureOn = BooleanVar()
 analysisdetails = StringVar()
 analysisdetails.set("No analysis stored")
 
-dpstring = StringVar()
+
 
 XSC = Variable()
 
@@ -317,17 +324,21 @@ def startanalysis():
     if not minboundvalidity.get() or  not maxboundvalidity.get():
         bounderror = messagebox.showwarning(title = "Analysis not started", message = "Please check your bounds before continuing, or use the autoset button.")
         return #checks bound validity
+    if not decimalvalidity.get():
+        decimalerror = messagebox.showwarning(title = "decimal field invalid", message = "invalid decimal places")
+        return
     scale_user_lower = math.floor(float(minimumentry.get())/automin.get())
     scale_user_upper = math.ceil(float(maximumentry.get())/automin.get())
+    dec_places = int(dpstring.get())
     minimumcached.set(scale_user_lower)
     print(scale_user_lower)
     print(scale_user_upper)
     if radiovalue.get():
-        xsc1 = analysis.GUI_parse_hybrid_data(fileobject.get(),FunctionCombo.get(),FunctionHybrid.get(),scale_user_lower,scale_user_upper)
+        xsc1 = analysis.GUI_parse_hybrid_data(fileobject.get(),FunctionCombo.get(),FunctionHybrid.get(),scale_user_lower,scale_user_upper,dec_places)
         analysisdetails.set(f"{filenamesolo.get()}_Hybrid_{FunctionCombo.get()}_{FunctionHybrid.get()}_{minentrynumber.get()}_to_{maxentrynumber.get()}")
         
     else:
-        xsc1 = analysis.GUIparse_data(fileobject.get(),FunctionCombo.get(),scale_user_lower,scale_user_upper)
+        xsc1 = analysis.GUIparse_data(fileobject.get(),FunctionCombo.get(),scale_user_lower,scale_user_upper,dec_places)
         analysisdetails.set(f"{filenamesolo.get()}_Standard_{FunctionCombo.get()}_{minentrynumber.get()}_to_{maxentrynumber.get()}")
     
     XSC.set(xsc1)
@@ -335,7 +346,7 @@ def startanalysis():
 
 
     
-def plot3d(XSC,LogScale,LogABSCurvature,title):
+def plot3d(XSC,LogScale,LogABSCurvature,title,xlabel,ylabel,zlabel):
     #initial declaration of the figure
     ThreeDplot = plt.figure(title)
     '''plot a set of points for curvature. Options are for Log of the scale and log of absolute value of curvature'''
@@ -436,6 +447,29 @@ def WriteCSV():
     else:
         warning =messagebox.showwarning("No file stored","No file available to save")
 
+def decimalcheck(a,b,c):
+    string_number = dpstring.get()
+    if string_number == "":
+        decimalmessage.set("Please input number of decimal places.")
+        decimalvalidity.set(0)
+        return
+    try:
+        int_number = int(string_number)
+
+        if int_number < 0:
+            decimalmessage.set(f"Number of decimal places must be positive")
+            decimalvalidity.set(0)
+            return
+
+        decimalmessage.set("Valid decimal place count!")
+        decimalvalidity.set(1)
+        
+        
+    except ValueError:
+        decimalmessage.set(f"Cannot convert '{string_number}' to a integer.")
+  
+
+   
 
 
 
@@ -474,8 +508,13 @@ maximumentry = Entry(root, textvariable = maxentrynumber, width = 50, borderwidt
 resetboundbutton = Button(root, text = "automatically set bounds", command = autosetbounds)
 
 
+
+
+
 #decimal limiting
+decimaltext = Label(root, textvariable = decimalmessage)
 decimalplaces = Entry(root, textvariable = dpstring)
+
 
 
 
@@ -506,6 +545,7 @@ minentrynumber.trace_add("write",mincheckbound)
 maxentrynumber.trace_add("write",maxcheckbound)
 FunctionCombo.bind("<<ComboboxSelected>>", FunctionKeySelect)
 
+dpstring.trace_add("write",decimalcheck)
 #PACKING ELEMENTS, determines packing order
 filelabel.pack()
 filebutton.pack()
@@ -528,6 +568,10 @@ maximumbound.pack()
 maximumentry.pack()
 
 resetboundbutton.pack()
+
+
+decimaltext.pack()
+decimalplaces.pack()
 
 analysisbutton.pack()
 analysisLabel.pack()
@@ -566,6 +610,8 @@ popup.title("Error analysis")
 popup.withdraw()
 ErrorData = Variable()
 theoreticaldataname = Variable()
+analysistype = IntVar()
+analysistype.set(0)
 theoreticallabel = StringVar()
 theoreticalfileobject = Variable()
 theoryfilenamesolo = StringVar()
@@ -604,7 +650,10 @@ def errorselectfile():
         
 def performerroranalysis():
     if theoreticalfileobject.get() and XSC.get():
-        ErrorData.set(analysis.GUI_percent_error(XSC.get(),theoreticalfileobject.get(),minimumcached.get()))
+        if analysistype.get() == 0:
+            ErrorData.set(analysis.GUI_percent_error2(XSC.get(),theoreticalfileobject.get(),minimumcached.get()))
+        else:
+            ErrorData.set(analysis.GUI_absolute_error2(XSC.get(),theoreticalfileobject.get(),minimumcached.get()))
     else:
         nofileerror = messagebox.showerror("analysis not started", "Curvature data or measured data not detected")
 
@@ -620,12 +669,21 @@ def checkdata():
         errorwindow = messagebox.showwarning("No file selected", "No curvature data has been loaded.")
 
 def graph_theoretical_comparison():
-       data = ErrorData.get()
-       if data:
-            plot3d(data,LogScaleOn.get(),LogAbsCurvatureOn.get(),"Position, Scale, Percent Error")
-            return
-       else:
-            grapherror = messagebox.showerror(title = "Graphing failed", message = "Please perform a comparison before graphing.")
+    xlabel = "Position"
+    ylabel = "Scale"
+    if analysistype.get() == 0:
+        title = "Position, Scale, Percent Error"
+        zlabel = "Percent Error"
+    else:
+        title = "Position, Scale, Error difference" 
+        zlabel = "Error difference"
+        
+    data = ErrorData.get()
+    if data:
+        plot3d(data,LogScaleOn.get(),LogAbsCurvatureOn.get(),title,xlabel,ylabel,zlabel)
+        return
+    else:
+        grapherror = messagebox.showerror(title = "Graphing failed", message = "Please perform a comparison before graphing.")
 def WriteCSVError():
     '''writes input list of list to csv file at user specified location'''
     file = ErrorData.get()
@@ -661,14 +719,22 @@ SaveDataButton = Button(popup, text = "Save file", command = WriteCSV)
 
 TheoreticalFileLabel = Label(popup, textvariable= theoreticaldataname)
 ErrorFileButton = Button(popup, text = "select error analysis file", command = errorselectfile)
+
+
+percenterrorbutton = Radiobutton(popup, text="Percent error",variable=analysistype, value = 0)
+differencebutton = Radiobutton(popup, text="Absolute error",variable=analysistype, value = 1)
+
 StartErrorAnalysisButton = Button(popup, text = "Start Error Analysis", command = performerroranalysis)
 GraphErrorAnalysisButton = Button(popup, text = "graph comparison data", command = graph_theoretical_comparison)
+SaveErrorAnalysisButton = Button(popup, text = "Save Error Analysis", command = WriteCSVError)
 TheoreticalFileLabel.pack()
 ErrorFileButton.pack()
 CheckButton.pack()
+percenterrorbutton.pack()
+differencebutton.pack()
 StartErrorAnalysisButton.pack()
 GraphErrorAnalysisButton.pack()
-
+SaveErrorAnalysisButton.pack()
 
 
 
