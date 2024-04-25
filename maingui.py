@@ -415,7 +415,7 @@ def plot2d(input_array,fignumber):
 def graphdata():
     data = XSC.get()
     if data:
-        plot3d(data,LogScaleOn.get(),LogAbsCurvatureOn.get(),"Position, Scale, Curvature")
+        plot3d(data,LogScaleOn.get(),LogAbsCurvatureOn.get(),"Position, Scale, Curvature","Position","Scale","Curvature")
         return
     else:
         grapherror = messagebox.showerror(title = "Graphing failed", message = "Please perform an analysis before graphing.")
