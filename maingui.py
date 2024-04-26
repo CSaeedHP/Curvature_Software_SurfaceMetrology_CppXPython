@@ -388,7 +388,7 @@ def plot3d(XSC,LogScale,LogABSCurvature,title,xlabel,ylabel,zlabel):
     plt.colorbar(scatter, ax = theplot, label = "Curvature", ticklocation = 'auto')
     theplot.locator_params(nbins = 5)
     #colorbar = plt.colorbar(mpl.cm.ScalarMappable(cmap='turbo'), ax=theplot, orientation='vertical', label='Curvature')
-    ThreeDplot.canvas.manager.window.attributes('-topmost', 0)
+    # ThreeDplot.canvas.manager.window.attributes('-topmost', 0)
     plt.show(block = False)
     return theplot
 

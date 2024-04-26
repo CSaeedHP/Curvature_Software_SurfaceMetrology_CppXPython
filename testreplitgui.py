@@ -1,7 +1,6 @@
+import numba
 import plotly.graph_objects as go
 import pandas as pd
-import cudf.pandas
-cudf.pandas.install
 import tkinter
 from tkinter import filedialog
 tkinter.Tk().withdraw() 

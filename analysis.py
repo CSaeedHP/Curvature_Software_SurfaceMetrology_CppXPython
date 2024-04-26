@@ -266,24 +266,22 @@ def GUI_percent_error2(xsc, curv_theoretical, listshrink):
     #Iterate through positons
     i = 0
     CT_index = 0
-    with alive_bar(len(xsc))as bar:
-        while i < len(xsc):
-                if (CT_index == len(curv_theoretical)):
-                    curv_theoretical = curv_theoretical[1:-1]
-                    CT_index = 0
-                    progress += 1
-                    progress_var.set(progress)
-                    popup2.update()
-                position = xsc[i][0]
-                expected_curvature = curv_theoretical[CT_index][1]
-                calculated_curvature = xsc[i][2]
-                perc_error = error_calculation(calculated_curvature, expected_curvature)
-                XSPE.append([position, xsc[i][1], perc_error])
-                i += 1
-                CT_index += 1
-                bar()
-        popup2.destroy()
-        return XSPE
+    while i < len(xsc):
+            if (CT_index == len(curv_theoretical)):
+                curv_theoretical = curv_theoretical[1:-1]
+                CT_index = 0
+                progress += 1
+                progress_var.set(progress)
+                popup2.update()
+            position = xsc[i][0]
+            expected_curvature = curv_theoretical[CT_index][1]
+            calculated_curvature = xsc[i][2]
+            perc_error = error_calculation(calculated_curvature, expected_curvature)
+            XSPE.append([position, xsc[i][1], perc_error])
+            i += 1
+            CT_index += 1
+    popup2.destroy()
+    return XSPE
     
 def GUI_absolute_error2(xsc, curv_theoretical, listshrink):
     #inputs: XSC (x, scale, curv), Theoretical curvature (x, Curv)
@@ -304,24 +302,22 @@ def GUI_absolute_error2(xsc, curv_theoretical, listshrink):
     #Iterate through positons
     i = 0
     CT_index = 0
-    with alive_bar(len(xsc))as bar:
-        while i < len(xsc):
-                if (CT_index == len(curv_theoretical)):
-                    curv_theoretical = curv_theoretical[1:-1]
-                    CT_index = 0
-                    progress += 1
-                    progress_var.set(progress)
-                    popup2.update()
-                position = xsc[i][0]
-                expected_curvature = curv_theoretical[CT_index][1]
-                calculated_curvature = xsc[i][2]
-                error = expected_curvature - calculated_curvature
-                XSE.append([position, xsc[i][1], error])
-                i += 1
-                CT_index += 1
-                bar()
-        popup2.destroy()
-        return XSE
+    while i < len(xsc):
+            if (CT_index == len(curv_theoretical)):
+                curv_theoretical = curv_theoretical[1:-1]
+                CT_index = 0
+                progress += 1
+                progress_var.set(progress)
+                popup2.update()
+            position = xsc[i][0]
+            expected_curvature = curv_theoretical[CT_index][1]
+            calculated_curvature = xsc[i][2]
+            error = expected_curvature - calculated_curvature
+            XSE.append([position, xsc[i][1], error])
+            i += 1
+            CT_index += 1
+    popup2.destroy()
+    return XSE
     
 
     
