@@ -43,7 +43,8 @@ filename = filelabeling()
 
 
 df = pd.read_csv(rf"{filename}")
-fig = px.scatter_3d(df, x='X', y='S', z='C')
+df.columns = ['X','S','C']
+fig = px.scatter_3d(df, x='X',y='S',z='C')
 fig.show()
 # # Read data from a csv
 # z_data = pd.read_csv(r"C:\Users\J\Downloads\export.csv")\]=
