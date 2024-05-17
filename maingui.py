@@ -17,8 +17,11 @@ import random
 root = Tk()
 root.wm_attributes('-topmost', 0)
 root.title("curvature project development")
-root.iconbitmap("icon.ico")
-root.wm_iconbitmap("icon.ico")
+try:
+    root.iconbitmap("icon.ico")
+    root.wm_iconbitmap("icon.ico")
+except:
+    print("icon not found")
 root.minsize(400,600)
 #structure of code:
 #code is divided into various sections, in a specifc order to ensure functionality of code.
