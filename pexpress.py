@@ -44,6 +44,10 @@ filename = filelabeling()
 
 df = pd.read_csv(rf"{filename}")
 df.columns = ['X','S','C']
+print(df)
+if len(df) > 1000000:
+    df = df.sample(n=800000)
+print(df)
 fig = px.scatter_3d(df, x='X',y='S',z='C')
 fig.show()
 # # Read data from a csv
