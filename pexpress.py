@@ -46,9 +46,14 @@ df = pd.read_csv(rf"{filename}")
 df.columns = ['X','S','C']
 print(df)
 if len(df) > 650000:
-    df = df.sample(n=50000) #modify this number
+    df = df.sample(n=650000) #modify this number
+zmax = df['C'].max()
+zmin = df['C'].min()
+
 print(df)
-fig = px.scatter_3d(df, x='X',y='S',z='C')
+
+print(zmin,zmax)
+fig = px.scatter_3d(df, x='X',y='S',z='C',range_z=[zmin,zmax])
 fig.show()
 # # Read data from a csv
 # z_data = pd.read_csv(r"C:\Users\J\Downloads\export.csv")\]=
