@@ -108,8 +108,9 @@ def GUIparse_data(data,functionkey,min,max,dec_places):
             X = data[i + scale][0] #points[1][0]
             
             C = choicefunction(data[i][0], data[i][1], X, data[i + scale][1], data[i + 2 * scale][0], data[i + 2 * scale][1])
-            C = trunkate_float(C, dec_places)
+            # C = GUI_trunkate_float(C, dec_places)
             if not C:
+                print("error")
                 break
             XSC.append([X, S, C])
         scale += 1
@@ -202,7 +203,7 @@ def GUI_parse_hybrid_data(data,obtusekey,acutekey,min,max,dec_places):
                 C = obtusefunction(x1,z1,x2,z2,x3,z3)
             else:
                 C = acutefunction(x1,z1,x2,z2,x3,z3)
-            C = trunkate_float(C, dec_places)
+            C = GUI_trunkate_float(C, dec_places)
             if not C:
                 break
             XSC.append([x2, S, C])
