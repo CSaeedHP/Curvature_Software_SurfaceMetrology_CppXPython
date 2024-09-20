@@ -128,5 +128,5 @@ def plotly3d(XSC):
     print(df)
 
     print(zmin,zmax)
-    fig = px.scatter_3d(df, x='X',y='S',z='C',range_z=[zmin,zmax])
+    fig = px.scatter_3d(df, x='X',y='S',z='C',range_z=[zmin,zmax],color="C", color_continuous_scale="Viridis")
     fig.show()
