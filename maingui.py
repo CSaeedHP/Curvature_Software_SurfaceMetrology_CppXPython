@@ -92,6 +92,7 @@ LogScaleOn = BooleanVar()
 LogAbsCurvatureOn = BooleanVar()
 
 WebBrowserGraphOn = BooleanVar()
+ErrorWebBrowserGraphOn = BooleanVar()
 
 analysisdetails = StringVar()
 analysisdetails.set("No analysis stored")
@@ -419,7 +420,7 @@ def plot2d(input_array,fignumber):
 def graphdata():
     data = XSC.get()
     if data and WebBrowserGraphOn.get():
-        display.plotly3d(data)
+        display.plotly3d(data,LogScaleOn.get(),LogAbsCurvatureOn.get())
         return
     if data:
         plot3d(data,LogScaleOn.get(),LogAbsCurvatureOn.get(),"Position, Scale, Curvature","Position","Scale","Curvature")
@@ -687,6 +688,9 @@ def graph_theoretical_comparison():
         zlabel = "Error difference"
         
     data = ErrorData.get()
+    if data and ErrorWebBrowserGraphOn.get():
+        display.plotly3d(data,LogScaleOn.get(),LogAbsCurvatureOn.get())
+        return
     if data:
         plot3d(data,LogScaleOn.get(),LogAbsCurvatureOn.get(),title,xlabel,ylabel,zlabel)
         return
@@ -734,12 +738,14 @@ differencebutton = Radiobutton(popup, text="Absolute error",variable=analysistyp
 
 StartErrorAnalysisButton = Button(popup, text = "Start Error Analysis", command = performerroranalysis)
 GraphErrorAnalysisButton = Button(popup, text = "graph comparison data", command = graph_theoretical_comparison)
+ErrorWebGraph = Checkbutton(popup, text = "Graph in web browser?",variable = ErrorWebBrowserGraphOn)
 SaveErrorAnalysisButton = Button(popup, text = "Save Error Analysis", command = WriteCSVError)
 TheoreticalFileLabel.pack()
 ErrorFileButton.pack()
 CheckButton.pack()
 percenterrorbutton.pack()
 differencebutton.pack()
+ErrorWebGraph.pack()
 StartErrorAnalysisButton.pack()
 GraphErrorAnalysisButton.pack()
 SaveErrorAnalysisButton.pack()

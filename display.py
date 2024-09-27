@@ -106,7 +106,7 @@ def plot2d(input_array):
     return ax
     plt.show(block = False)
 
-def plotly3d(XSC):
+def plotly3d(XSC,LogGraphingOn,LogABSCurvature):
     # marker_data = go.Scatter3d(x=[row[0] for row in XSC],
     #                            y=[row[1] for row in XSC],
     #                            z=[row[2] for row in XSC],
@@ -119,6 +119,10 @@ def plotly3d(XSC):
 
     df = pd.DataFrame(XSC,columns = ['X','S','C'])
     df.columns = ['X','S','C']
+    if LogGraphingOn:
+        df['S'] = np.log(df['S'])
+    if LogABSCurvature:
+        df['C'] = np.log(np.absolute(df['C']))
     print(df)
     if len(df) > 650000:
         df = df.sample(n=650000) #modify this number
