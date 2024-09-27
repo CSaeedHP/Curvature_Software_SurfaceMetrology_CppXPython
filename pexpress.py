@@ -22,6 +22,7 @@ def filelabeling(): #used with select file button and filelabel
                                   filetypes = (("CSV files (Comma separated value)", "*.csv"),
                                                ("Text files", "*.txt"), 
                                                ("All files", "*")))
+    print(type(file))
     if file:
         return(os.path.abspath(file.name))
     try:

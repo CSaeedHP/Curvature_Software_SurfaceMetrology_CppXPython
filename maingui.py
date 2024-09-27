@@ -9,7 +9,7 @@ import analysis
 import display
 import math
 import matplotlib.pyplot as plt
-import matplotlib as mpl
+import matplotlib as mplg
 import numpy as np
 import random
 
