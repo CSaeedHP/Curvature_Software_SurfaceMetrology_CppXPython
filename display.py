@@ -5,9 +5,11 @@ import matplotlib as mpl
 from analysis import *
 from tkinter import filedialog
 import time
-# import plotly.graph_objects as go
+import plotly.graph_objects as go
 import math
 import userIO
+import pandas as pd
+import plotly.express as px
 
 # start_time = time.time()
 
@@ -104,12 +106,27 @@ def plot2d(input_array):
     return ax
     plt.show(block = False)
 
-# def plotly3d(XSC):
-#     marker_data = go.Scatter3d(x=[row[0] for row in XSC],
-#                                y=[row[1] for row in XSC],
-#                                z=[row[2] for row in XSC],
-#                                marker=go.scatter3d.Marker(size=3),
-#                                opacity=1,
-#                                mode='markers')
-#     fig=go.Figure(data=marker_data)
-#     fig.show()
+def plotly3d(XSC):
+    # marker_data = go.Scatter3d(x=[row[0] for row in XSC],
+    #                            y=[row[1] for row in XSC],
+    #                            z=[row[2] for row in XSC],
+    #                            marker=go.scatter3d.Marker(size=3),
+    #                            opacity=1,
+    #                            mode='markers')
+    
+    # fig=go.Figure(data=marker_data)
+    # fig.show()
+
+    df = pd.DataFrame(XSC,columns = ['X','S','C'])
+    df.columns = ['X','S','C']
+    print(df)
+    if len(df) > 650000:
+        df = df.sample(n=650000) #modify this number
+    zmax = df['C'].max()
+    zmin = df['C'].min()
+
+    print(df)
+
+    print(zmin,zmax)
+    fig = px.scatter_3d(df, x='X',y='S',z='C',range_z=[zmin,zmax],color="C", color_continuous_scale="Viridis")
+    fig.show()

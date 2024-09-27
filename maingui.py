@@ -9,7 +9,7 @@ import analysis
 import display
 import math
 import matplotlib.pyplot as plt
-import matplotlib as mpl
+import matplotlib as mplg
 import numpy as np
 import random
 
@@ -91,6 +91,7 @@ LogScaleOn = BooleanVar()
 
 LogAbsCurvatureOn = BooleanVar()
 
+WebBrowserGraphOn = BooleanVar()
 
 analysisdetails = StringVar()
 analysisdetails.set("No analysis stored")
@@ -417,6 +418,9 @@ def plot2d(input_array,fignumber):
 
 def graphdata():
     data = XSC.get()
+    if data and WebBrowserGraphOn.get():
+        display.plotly3d(data)
+        return
     if data:
         plot3d(data,LogScaleOn.get(),LogAbsCurvatureOn.get(),"Position, Scale, Curvature","Position","Scale","Curvature")
         return
@@ -534,7 +538,7 @@ graphbutton = Button(root, text = "Graph curvature data", command = graphdata)
 Graphoptions = Label(root, text = "Graphing options")
 LogBox = Checkbutton(root, text = "Logarithmic Scale", variable = LogScaleOn, onvalue = 1, offvalue = 0)
 LogAbsCurvature = Checkbutton(root, text = "Log|curvature|", variable = LogAbsCurvatureOn, onvalue = 1, offvalue = 0)
-
+Plotlygraph = Checkbutton(root, text = "Graph in web browser?", variable = WebBrowserGraphOn, onvalue = 1, offvalue =  0)
 
 #savefile
 savebutton = Button(root, text = "save analysis", command = WriteCSV)
@@ -584,6 +588,7 @@ analysisLabel.pack()
 Graphoptions.pack()
 LogBox.pack()
 LogAbsCurvature.pack()
+Plotlygraph.pack()
 graphbutton.pack()
 savebutton.pack()
 
