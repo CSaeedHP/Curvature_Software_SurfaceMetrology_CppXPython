@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 import matplotlib as mplg
 import numpy as np
 import random
-
+import X3Pconverter
 
 root = Tk()
 root.wm_attributes('-topmost', 0)
@@ -110,36 +110,43 @@ def filelabeling(): #used with select file button and filelabel
     file = filedialog.askopenfile(parent=root,
                                   initialdir="./",
                                   title="Select A File",
-                                  filetypes = (("CSV files (Comma separated value)", "*.csv"),
+                                  filetypes = (("X3P (2D surface profile)","*.x3p"),
+                                               ("CSV files (Comma separated value)", "*.csv"),
                                                ("Text files", "*.txt"), 
                                                ("All files", "*")))
     if file:
         filename.set(os.path.abspath(file.name))
-        try:
-            data = file.read().split()
-        except UnicodeDecodeError:
-            filename.set("Unicode error: Data File Incompatible!") #handles incompatible files
-            fileobject.set(False) 
-            minentrynumber.set("")
-            maxentrynumber.set("")
-            minboundmessage.set("Please select a file.")
-            maxboundmessage.set("Please select a file.")
-            disablebounds()
-            return
-        for i in range(len(data)):
-            point = data[i].split(',')
+        extension = os.path.splitext(filename.get())[1]
+        if extension == ".x3p": 
+            print("x3p file found")
+            #passes on the file path to the x3preader function
+            data, hashvalue = X3Pconverter.readx3p(filename.get())
+        else:
             try:
-                x = float(point[0]); z = float(point[1])
-            except ValueError:
-                filename.set("Field error: Data File Incompatible!") #handles incompatible files
+                data = file.read().split()
+            except UnicodeDecodeError:
+                filename.set("Unicode error: Data File Incompatible!") #handles incompatible files
+                fileobject.set(False) 
                 minentrynumber.set("")
                 maxentrynumber.set("")
                 minboundmessage.set("Please select a file.")
                 maxboundmessage.set("Please select a file.")
-                fileobject.set(False)
                 disablebounds()
                 return
-            data[i] = [x, z]
+            for i in range(len(data)):
+                point = data[i].split(',')
+                try:
+                    x = float(point[0]); z = float(point[1])
+                except ValueError:
+                    filename.set("Field error: Data File Incompatible!") #handles incompatible files
+                    minentrynumber.set("")
+                    maxentrynumber.set("")
+                    minboundmessage.set("Please select a file.")
+                    maxboundmessage.set("Please select a file.")
+                    fileobject.set(False)
+                    disablebounds()
+                    return
+                data[i] = [x, z]
         fileobject.set(data)
         [datamin,datamax,odd] = userIO.get_range(data) #determining minimum and maximum possible bounds based on data
         minentrynumber.set(datamin)
