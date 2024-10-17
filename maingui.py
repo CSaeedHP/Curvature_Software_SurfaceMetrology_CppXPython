@@ -762,13 +762,4 @@ ErrorAnalysisButton = Button(root, text = "Error Analysis", command = open_popup
 
 ErrorAnalysisButton.pack()
 
-
-
-
-
-
-
-
-
-
 root.mainloop()

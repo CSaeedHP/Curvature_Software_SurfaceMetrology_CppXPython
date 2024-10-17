@@ -1,4 +1,4 @@
-
+import os
 import csv 
 import tkinter
 from tkinter import filedialog
@@ -40,6 +40,8 @@ def OpenCSV():
     for x in data:
         return data
     
+
+
 def OpenCSVexceptionhandler():
     my_file = filedialog.askopenfile(parent=window,
                                   initialdir="",
@@ -83,4 +85,13 @@ def WriteCSV(XSC):
 def TestWrite():
     filedialog.asksaveasfile()
 
-    
+
+
+def OpenFile():
+    my_file = filedialog.askopenfile(parent=window,
+                                  initialdir="",
+                                  title="Select A File",
+                                  filetypes = (("CSV files (Comma separated value)", "*.csv"),
+                                               ("Text files", "*.txt"), 
+                                               ("All files", "*")))
+    return os.path.abspath(my_file.name)
