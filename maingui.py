@@ -417,7 +417,7 @@ def plot2d(input_array,fignumber):
     Y = [row[1] for row in input_array]
     ax = plt.axes()
     ax.grid()
-    ax.scatter(X,Y)
+    ax.plot(X,Y)
     ax.set_xlabel('X position', labelpad = 20)
     ax.set_ylabel('Height', labelpad = 20)
     plt.show(block = False)
