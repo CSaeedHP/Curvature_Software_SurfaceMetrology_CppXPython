@@ -20,7 +20,6 @@ function_keys = {
 #this processes all the curvatures
 
 #returns the curvature of a given 2d array of 3 points
-#functionally hybrid, work is needed
 
 def trunkate_float(value, places):
     multiplier = 10 ** int(places)
