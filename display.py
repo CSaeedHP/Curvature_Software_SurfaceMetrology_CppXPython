@@ -1,11 +1,7 @@
 import numpy as np
-from mpl_toolkits import mplot3d
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 from analysis import *
-from tkinter import filedialog
-import time
-import plotly.graph_objects as go
 import math
 import userIO
 import pandas as pd
