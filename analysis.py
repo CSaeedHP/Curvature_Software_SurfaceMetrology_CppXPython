@@ -4,7 +4,6 @@ import functions_class
 from alive_progress import alive_bar;
 from tkinter import ttk
 import tkinter as tk
-import numba
 #pip install alive-progress
 
 #putting all the functions inside a dictionary
