@@ -107,9 +107,6 @@ def GUIparse_data(data,functionkey,min,max,dec_places):
             
             C = choicefunction(data[i][0], data[i][1], X, data[i + scale][1], data[i + 2 * scale][0], data[i + 2 * scale][1])
             # C = GUI_trunkate_float(C, dec_places)
-            if not C:
-                print("zero curvature")
-                break
             XSC.append([X, S, C])
         scale += 1
         popup.update()
