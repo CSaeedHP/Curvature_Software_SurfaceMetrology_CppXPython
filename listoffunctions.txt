@@ -1,0 +1,24 @@
+angletest            : Done
+difference of slopes : Done
+FDA                  : Done
+heron's curvature    : Done
+hybrid               : 
+lagrangian           : Done
+parabola             : Done
+error analysis       : 
+percenterror         : 
+x fault array        : 
+
+parse data        :
+  - extraction code
+  - function applicator
+  - group selector
+
+
+initial max scale    : Done
+savefile             : 
+importfile           : Done
+keyinput             : 
+plotter              : 
+userbound            : Done
+XZdisplay            : 

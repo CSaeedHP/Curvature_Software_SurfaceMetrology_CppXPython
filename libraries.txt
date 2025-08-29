@@ -1,0 +1,7 @@
+numpy
+matplotlib
+plotly
+alive-progress
+numba
+pandas
+xmltodict
