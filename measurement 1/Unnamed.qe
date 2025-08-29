@@ -1,0 +1,17 @@
+PROGRAM PROG_QE ROUGHNESS
+BEGIN
+QE ROUGHNESS(VERSION=14101001, 
+PROF=["Roughness1.prf"], 
+MEAS_PATH=[5.60 [mm]], 
+NOTE=["NIL"], 
+PICTURE=["NIL"], 
+ZOOM_START=NIL, 
+ZOOM_WIDTH=NIL, MEAS=SURFACE, 
+PNP_TYPE=[2], 
+PNP_NR=[1], 
+PNP_PROF_BASE=["Roughness"], 
+PNP_START_NR=[1], OPERATOR="Jonathon Chang", PART_NAME="mahr test card", 
+DRAWING_NO="1", OPERATION="1", COMMENT="This is a test!", 
+TEXT_1="1", TEXT_2="Surface Metrology Lab", TEXT_3="1", 
+TEXT_4="1", TEXT_5="Jchang")
+END
