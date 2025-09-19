@@ -3,9 +3,9 @@
 
 #include "dataContainer.h"
 #include "userData.h"
-#include<string>
-#include<fstream>
-#include<vector>
+#include <string>
+#include <fstream>
+#include <vector>
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
 namespace py = pybind11;
