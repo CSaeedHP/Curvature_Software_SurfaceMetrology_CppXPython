@@ -35,6 +35,8 @@ int main() {
   uData.setDataContainer(&data);
 
   //get file path, store it into the uData.
+  
+  // change for python input file path ---------------------------------------
   uData.setInputFilePath(cliInput::getString("Please enter the file path"));
   
 
@@ -55,6 +57,8 @@ int main() {
 
   //set the scales into the uData object.
   uData.setScaleBounds(minscale, maxscale);
+
+  // change for python input file path ---------------------------------------
 
   std::cout<< "bounds set successfully" << std::endl;
 
@@ -148,4 +152,5 @@ int main() {
   // // curv->setScale(0.5);
   
 }
- 
+
+

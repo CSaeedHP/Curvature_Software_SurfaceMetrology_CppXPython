@@ -26,6 +26,10 @@ include(FetchContent)
 
 # target_include_directories(imgui PUBLIC ${imgui_SOURCE_DIR} ${imgui_SOURCE_DIR}/backends)
 
+
+find_package(pybind11 CONFIG REQUIRED)
+
+
 add_executable(main main.cpp)
 
 add_library(fileHandler fileHandler.cpp)
@@ -49,3 +53,6 @@ target_link_libraries(main PRIVATE fileHandler formula userData analysis dataCon
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -static-libgcc -static-libstdc++ -pthread")
 endif()
+
+
+pybind11_add_module()

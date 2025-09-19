@@ -1,0 +1,10 @@
+uData and DataContainer
+uData is the user data
+
+add uData.setDataContainer
+
+uData.setInputFilePath
+
+FileHandler needs to be exposed
+
+Datacontainer setmaxhalfinterval
