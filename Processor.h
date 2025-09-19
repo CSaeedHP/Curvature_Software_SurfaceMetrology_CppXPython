@@ -18,6 +18,7 @@ using namespace std;
 #include "formula.h"
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
+namespace py = pybind11;
 
 class Processor{
     public:
@@ -31,9 +32,9 @@ class Processor{
 
     //process data
     void loadData(string inputfile, double minscale, double maxscale, bool hybrid, int acutemethod, int obtusemethod);
-    
+    void processData();
     //write data
-    void writeData();
+    void writeData(string filePath);
 
     //return data
     py::array_t<double> fetchData();

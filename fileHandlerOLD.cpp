@@ -7,8 +7,6 @@
 #include <vector>
 #include "fileHandler.h"
 #include "userData.h"
-#include <pybind11/pybind11.h>
-#include <pybind11/numpy.h>
 
 using namespace std;
 
@@ -144,56 +142,6 @@ int FileHandler::fileWrite(UserData* uData, string fileName) {
     return 0;
 }
 
-
-py::array_t<double> exportData(UserData* uData) {
-    DataContainer* XSC = uData->getDataContainer();
-    if (XSC == nullptr) {
-        throw std::runtime_error("Error: DataContainer is null.");
-    }
-
-    int BroadArraySize = XSC->getCurvatureArrayLength();
-    if (BroadArraySize <= 0) {
-        throw std::runtime_error("Error: Invalid BroadArraySize.");
-    }
-
-    // Collect data into a flat vector (x, scale, curvature per row)
-    std::vector<double> data;
-    data.reserve(BroadArraySize * 3 * 10); // rough reserve, optional
-
-    for (int ScaleSwitching = 0; ScaleSwitching < BroadArraySize; ++ScaleSwitching) {
-        int CurvatureArraySize = XSC->getIndex(ScaleSwitching)->getLength();
-        if (CurvatureArraySize <= 0) {
-            throw std::runtime_error(
-                "Error: Invalid CurvatureArraySize at index " + std::to_string(ScaleSwitching)
-            );
-        }
-
-        for (int CurvatureSwitching = 0; CurvatureSwitching < CurvatureArraySize; ++CurvatureSwitching) {
-            double xpos = XSC->getPointAddress(
-                CurvatureSwitching + ScaleSwitching + uData->getMinScale()
-            )->x;
-
-            double scale = XSC->getIndex(ScaleSwitching)->getScale() * XSC->getMinLength();
-
-            double curvature = XSC->getIndex(ScaleSwitching)->getCurvature(CurvatureSwitching);
-
-            data.push_back(xpos);
-            data.push_back(scale);
-            data.push_back(curvature);
-        }
-    }
-
-    // Compute number of rows
-    ssize_t nrows = data.size() / 3;
-
-    // Create a NumPy array view into the vector (no copy, vector owns memory)
-    return py::array_t<double>(
-        { nrows, 3 },                      // shape
-        { sizeof(double) * 3, sizeof(double) }, // strides
-        data.data(),                       // raw pointer
-        py::cast(data)                     // keep vector alive as base object
-    );
-}
 //File checking:
 // Function to check if a file exists
 bool FileHandler::validPath(const std::string& path) {

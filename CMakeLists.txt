@@ -1,58 +1,47 @@
 cmake_minimum_required(VERSION 3.10)
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
 project(multiscale-curvature-analysis)
 
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-
-include(FetchContent)
-# Fetch Dear ImGui
-# FetchContent_Declare(
-#     imgui
-#     GIT_REPOSITORY https://github.com/ocornut/imgui.git
-#     GIT_TAG v1.91.9b # Use the latest or a specific version
-# )
-# FetchContent_MakeAvailable(imgui)
-
-# # Add ImGui to your project
-# add_library(imgui STATIC
-#     ${imgui_SOURCE_DIR}/imgui.cpp
-#     ${imgui_SOURCE_DIR}/imgui_draw.cpp
-#     ${imgui_SOURCE_DIR}/imgui_tables.cpp
-#     ${imgui_SOURCE_DIR}/imgui_widgets.cpp
-#     ${imgui_SOURCE_DIR}/backends/imgui_impl_glfw.cpp  # If using GLFW
-#     ${imgui_SOURCE_DIR}/backends/imgui_impl_opengl3.cpp  # If using OpenGL
-# )
-
-# target_include_directories(imgui PUBLIC ${imgui_SOURCE_DIR} ${imgui_SOURCE_DIR}/backends)
-
-
+# Find pybind11
+set(pybind11_DIR "C:/Users/J/AppData/Local/Programs/Python/Python313/Lib/site-packages/pybind11/share/cmake/pybind11")
 find_package(pybind11 CONFIG REQUIRED)
+include_directories(${pybind11_INCLUDE_DIRS})
 
 
-add_executable(main main.cpp)
+# Find OpenMP
+find_package(OpenMP REQUIRED)
 
+# Add your libraries
 add_library(fileHandler fileHandler.cpp)
 add_library(formula formula.cpp)
 add_library(userData userData.cpp)
 add_library(analysis analysis.cpp)
 add_library(dataContainer dataContainer.cpp)
 add_library(userInputCLI userInputCLI.cpp)
-
-find_package(OpenMP REQUIRED)
+add_library(processor_lib processor.cpp)
+target_include_directories(processor_lib PUBLIC ${pybind11_INCLUDE_DIRS})
+# Link OpenMP to analysis
 if (OpenMP_CXX_FOUND)
     target_link_libraries(analysis PRIVATE OpenMP::OpenMP_CXX)
 endif()
 
+# Add the pybind11 module
+pybind11_add_module(curvature bindings.cpp)
 
+# Link your libraries to the module
+target_link_libraries(curvature PRIVATE 
+    processor_lib
+    fileHandler
+    formula
+    userData
+    analysis
+    dataContainer
+    userInputCLI
+)
 
-target_link_libraries(main PRIVATE fileHandler formula userData analysis dataContainer userInputCLI)
-
-
-
-if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -static-libgcc -static-libstdc++ -pthread")
-endif()
-
-
-pybind11_add_module()
+# Optional: add include directories if needed
+target_include_directories(curvature PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}  # for headers
+)

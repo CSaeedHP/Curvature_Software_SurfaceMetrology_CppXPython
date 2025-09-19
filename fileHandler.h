@@ -6,6 +6,9 @@
 #include<string>
 #include<fstream>
 #include<vector>
+#include <pybind11/pybind11.h>
+#include <pybind11/numpy.h>
+namespace py = pybind11;
 using std::vector;
 class FileHandler{
     public:
@@ -16,6 +19,7 @@ class FileHandler{
         static bool validPath(const std::string& path);
         static std::string pathExtension(const std::string& path);
         static std::string remove_quotes(const std::string& input);
+        static py::array_t<double> exportData(UserData* uData);
 
     	static void inheritData();
 
