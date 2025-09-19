@@ -144,7 +144,7 @@ int FileHandler::fileWrite(UserData* uData, string fileName) {
 }
 
 
-py::array_t<double> exportData(UserData* uData) {
+py::array_t<double> FileHandler::exportData(UserData* uData) {
     DataContainer* XSC = uData->getDataContainer();
     if (XSC == nullptr) {
         throw std::runtime_error("Error: DataContainer is null.");
