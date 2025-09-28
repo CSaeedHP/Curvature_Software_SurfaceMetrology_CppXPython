@@ -16,9 +16,12 @@ void analysis::singleAnalysis(UserData* uData, DataContainer* data, double (*met
         
     //populate cuvatureScaleArray
     double curvature;
+    
     int minScale = uData->getMinScale();
     int maxScale = uData->getMaxScale();
+    std::cout << "minScale=" << minScale << ", maxScale=" << maxScale << std::endl;
 
+    std::cout << "Starting Analysis" << std ::endl;
     // Parallelize the outer loop for better performance
     #pragma omp parallel for private(curvature) schedule(dynamic)
     for(int scale = minScale; scale <= maxScale; scale++){ //iterate over scales
@@ -27,27 +30,30 @@ void analysis::singleAnalysis(UserData* uData, DataContainer* data, double (*met
             // Call the function on the points
             curvature = method( data->getPointAddress(point - scale), data->getPointAddress(point), data->getPointAddress(point + scale)); 
             // Store the result in the data container
+            // std::cout << "Writing curvature at scaleIdx: " << (scale - minScale)
+            // << ", pointIdx: " << (point - scale) << std::endl;
+
             data->putCurvature(scale - minScale, point-scale, curvature); //add curvature to data
 
-            if (curvature > 0){
-                data->setAvgPos(((data->getAvgPos() * data->getPosAvgDenominator()) + curvature) / (data->getPosAvgDenominator() + 1));
-                data->setPosAvgDenominator(data->getPosAvgDenominator() + 1);
-            }
+            // if (curvature > 0){
+            //     data->setAvgPos(((data->getAvgPos() * data->getPosAvgDenominator()) + curvature) / (data->getPosAvgDenominator() + 1));
+            //     data->setPosAvgDenominator(data->getPosAvgDenominator() + 1);
+            // }
 
-            else if (curvature < 0){
-                data->setAvgPos(((data->getAvgNeg() * data->getNegAvgDenominator()) + curvature) / (data->getNegAvgDenominator() + 1));
-                data->setNegAvgDenominator(data->getNegAvgDenominator() + 1);
-            }
+            // else if (curvature < 0){
+            //     data->setAvgPos(((data->getAvgNeg() * data->getNegAvgDenominator()) + curvature) / (data->getNegAvgDenominator() + 1));
+            //     data->setNegAvgDenominator(data->getNegAvgDenominator() + 1);
+            // }
 
-            data->updateFiveExtremes(curvature, data->getPointAddress(point)->x); //update five extremes
+            // data->updateFiveExtremes(curvature, data->getPointAddress(point)->x); //update five extremes
 
-            if (data->getAbsMin() == 0 || curvature < data->getAbsMin()) {
-                data->setAbsMin(curvature); //update absolute minimum
-            }
+            // if (data->getAbsMin() == 0 || curvature < data->getAbsMin()) {
+            //     data->setAbsMin(curvature); //update absolute minimum
+            // }
 
-            if (data->getAbsMax() == 0 || curvature > data->getAbsMax()) {
-                data->setAbsMax(curvature); //update absolute maximum
-            }
+            // if (data->getAbsMax() == 0 || curvature > data->getAbsMax()) {
+            //     data->setAbsMax(curvature); //update absolute maximum
+            // }
 
         }
 
@@ -83,25 +89,25 @@ void analysis::hybridAnalysis(UserData* uData, DataContainer* data, double (*met
 
             data->putCurvature(scale-minScale, point-scale, curvature); //add curvature to data
 
-            if (curvature > 0){
-                data->setAvgPos(((data->getAvgPos() * data->getPosAvgDenominator()) + curvature) / (data->getPosAvgDenominator() + 1));
-                data->setPosAvgDenominator(data->getPosAvgDenominator() + 1);
-            }
+            // if (curvature > 0){
+            //     data->setAvgPos(((data->getAvgPos() * data->getPosAvgDenominator()) + curvature) / (data->getPosAvgDenominator() + 1));
+            //     data->setPosAvgDenominator(data->getPosAvgDenominator() + 1);
+            // }
 
-            else if (curvature < 0){
-                data->setAvgPos(((data->getAvgNeg() * data->getNegAvgDenominator()) + curvature) / (data->getNegAvgDenominator() + 1));
-                data->setNegAvgDenominator(data->getNegAvgDenominator() + 1);
-            }
+            // else if (curvature < 0){
+            //     data->setAvgPos(((data->getAvgNeg() * data->getNegAvgDenominator()) + curvature) / (data->getNegAvgDenominator() + 1));
+            //     data->setNegAvgDenominator(data->getNegAvgDenominator() + 1);
+            // }
 
-            data->updateFiveExtremes(curvature, data->getPointAddress(point)->x); //update five extremes
+            // data->updateFiveExtremes(curvature, data->getPointAddress(point)->x); //update five extremes
 
-            if (data->getAbsMin() == 0 || curvature < data->getAbsMin()) {
-                data->setAbsMin(curvature); //update absolute minimum
-            }
+            // if (data->getAbsMin() == 0 || curvature < data->getAbsMin()) {
+            //     data->setAbsMin(curvature); //update absolute minimum
+            // }
 
-            if (data->getAbsMax() == 0 || curvature > data->getAbsMax()) {
-                data->setAbsMax(curvature); //update absolute maximum
-            }
+            // if (data->getAbsMax() == 0 || curvature > data->getAbsMax()) {
+            //     data->setAbsMax(curvature); //update absolute maximum
+            // }
             
         }
     }

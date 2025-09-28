@@ -1,20 +1,27 @@
 #include "Processor.h"
 namespace py = pybind11;
-
+using namespace std;
 Processor::Processor(){
-UserData uData;
-DataContainer data;
 uData.setDataContainer(&data);
 };
 void Processor::loadData(string inputfile, double minscale, double maxscale, bool hybrid, int acuteMethod, int obtuseMethod){
-uData.setInputFilePath(inputfile);
-uData.setScaleBounds(minscale, maxscale);
-FileHandler::fileRead(uData.getInputFilePath(), &data);
-data.setmaxhalfinterval();
-uData.setScaleBounds(minscale, maxscale);
-data.setNumOps(uData.getMinScale(), uData.getMaxScale());
-uData.setIsHybrid(hybrid);
-uData.setHybridSelection(obtuseMethod, acuteMethod);
+    std::cout << "setting inputfilepath"<< std::endl;
+    uData.setInputFilePath(inputfile);
+    // std::cout << "setting minscale, maxscale" << std::endl;
+    // uData.setScaleBounds(minscale, maxscale);
+    std::cout << "Reading file" << std ::endl;
+    FileHandler::fileRead(uData.getInputFilePath(), &data);
+    std::cout << "setting bounds" <<std ::endl;
+    data.setmaxhalfinterval();
+    std::cout << "setting min and max scale" << std::endl;
+    uData.setScaleBounds(minscale, maxscale);
+    std::cout << "preparing number of operations" << std::endl;
+    data.setNumOps(uData.getMinScale(), uData.getMaxScale());
+    std::cout << "setting hybrid status" <<std::endl;
+    uData.setIsHybrid(hybrid);
+    std::cout << "setting methods" <<std::endl;
+    uData.setAnalyisType(obtuseMethod);
+    uData.setHybridSelection(obtuseMethod, acuteMethod);
 };
 
 void Processor::processData(){
@@ -44,6 +51,7 @@ void Processor::processData(){
         double (*method1)(point*,point*,point*) = functionMapping[methodKey1];
         analysis::singleAnalysis(&uData, &data, method1, data.getPointArrayLength());
         }
+    std::cout << "Processing Finsihed" << std ::endl;
 };
 void Processor::writeData(string filePath){
     FileHandler::fileWrite(&uData, filePath);

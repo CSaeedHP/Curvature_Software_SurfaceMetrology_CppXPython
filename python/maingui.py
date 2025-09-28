@@ -12,7 +12,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 import random
 import X3Pconverter
-
+import sys
+sys.path.append(os.path.abspath("..//build//Debug"))
+import curvature
 root = Tk()
 root.wm_attributes('-topmost', 0)
 root.title("curvature project development")
@@ -329,6 +331,7 @@ def disablebounds():
     resetboundbutton["state"]=DISABLED
 
 def startanalysis():
+    proc = curvature.Processor()
     ''' checks for validity of the input paramaters, and then performs either standard or hybrid analysis'''
     if not fileobject.get():
         fileerror = messagebox.showwarning(title = "Analysis not started", message = "Data file missing or invalid. Please select another data file.")
@@ -345,20 +348,29 @@ def startanalysis():
     minimumcached.set(scale_user_lower)
     print(scale_user_lower)
     print(scale_user_upper)
-    if radiovalue.get():
-        xsc1 = analysis.GUI_parse_hybrid_data(fileobject.get(),FunctionCombo.get(),FunctionHybrid.get(),scale_user_lower,scale_user_upper,dec_places)
-        analysisdetails.set(f"{filenamesolo.get()}_Hybrid_{FunctionCombo.get()}_{FunctionHybrid.get()}_{minentrynumber.get()}_to_{maxentrynumber.get()}")
+
+    # proc.loadData(str(filename.get()),float(scale_user_lower),float(scale_user_upper),bool(radiovalue.get()),int(FunctionCombo.current()),int(FunctionHybrid.current()))
+    proc.loadData(str(filename.get()),float(minimumentry.get()),float(maximumentry.get()),bool(radiovalue.get()),int(FunctionCombo.current()+1),int(FunctionHybrid.current()+1))
+    # if radiovalue.get():
+    # if radiovalue.get():
+    #     xsc1 = analysis.GUI_parse_hybrid_data(fileobject.get(),FunctionCombo.get(),FunctionHybrid.get(),scale_user_lower,scale_user_upper,dec_places)
+    #     analysisdetails.set(f"{filenamesolo.get()}_Hybrid_{FunctionCombo.get()}_{FunctionHybrid.get()}_{minentrynumber.get()}_to_{maxentrynumber.get()}")
         
-    else:
-        xsc1 = analysis.GUIparse_data(fileobject.get(),FunctionCombo.get(),scale_user_lower,scale_user_upper,dec_places)
-        analysisdetails.set(f"{filenamesolo.get()}_Standard_{FunctionCombo.get()}_{minentrynumber.get()}_to_{maxentrynumber.get()}")
-    
+    # else:
+    #     xsc1 = analysis.GUIparse_data(fileobject.get(),FunctionCombo.get(),scale_user_lower,scale_user_upper,dec_places)
+    #     analysisdetails.set(f"{filenamesolo.get()}_Standard_{FunctionCombo.get()}_{minentrynumber.get()}_to_{maxentrynumber.get()}")
+    print("data loaded successfully!")
+    proc.processData()
+    print("data processed successfully!")
+    xsc1 = proc.fetchData()
     XSC.set(xsc1)
+    print("all analysis completed!")
 
 
 
 def plot3d(XSC,LogScale,LogABSCurvature,title,xlabel,ylabel,zlabel):
     #initial declaration of the figure
+    print(XSC)
     ThreeDplot = plt.figure(title)
     '''plot a set of points for curvature. Options are for Log of the scale and log of absolute value of curvature'''
     print(len(XSC))
@@ -367,21 +379,30 @@ def plot3d(XSC,LogScale,LogABSCurvature,title,xlabel,ylabel,zlabel):
     plt.rcParams['font.size'] = 10
 
     #X positions
-    X = [row[0] for row in XSC]
+    # X = [row[0] for row in XSC]
 
 
-    if LogScale: #applies logarithmic scale
-        S = [math.log10(row[1]) for row in XSC]
-    else:
-        S = [row[1] for row in XSC]
-    if LogABSCurvature: #applies log abs curvature
-        C = [math.log10(abs(row[2])) for row in XSC]
-    else:
-        C = [row[2] for row in XSC]
+
+    # if LogABSCurvature: #applies log abs curvature
+    #     C = [math.log10(abs(row[2])) for row in XSC]
+    # else:
+    #     C = [row[2] for row in XSC]
     # Xarr = np.asarray(X)
     # Sarr = np.asarray(S)
     # Carr = np.asarray(C)
 
+    # If XSC is a NumPy array, use slicing
+    if isinstance(XSC, np.ndarray):
+        X = XSC[:, 0]
+        S = XSC[:, 1]
+        C = XSC[:, 2]
+    else:
+        X = [row[0] for row in XSC]
+        S = [row[1] for row in XSC]
+        C = [row[2] for row in XSC]
+    # ... rest of your plotting code ...
+    if LogScale: #applies log scale
+        S = [math.log10(row) for row in S]
     theplot = plt.axes(projection='3d')
     colors = plt.cm.turbo(C)
     colors2 = plt.get_cmap('turbo')

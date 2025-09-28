@@ -6,6 +6,7 @@
 #include <filesystem>
 #include <vector>
 #include "fileHandler.h"
+#include <pybind11/stl.h>
 #include "userData.h"
 namespace py = pybind11;
 using ssize_t = py::ssize_t;
@@ -144,55 +145,52 @@ int FileHandler::fileWrite(UserData* uData, string fileName) {
 }
 
 
+// 
+
+// ...existing code...
+
 py::array_t<double> FileHandler::exportData(UserData* uData) {
     DataContainer* XSC = uData->getDataContainer();
-    if (XSC == nullptr) {
-        throw std::runtime_error("Error: DataContainer is null.");
-    }
+    if (!XSC) throw std::runtime_error("DataContainer is null");
 
     int BroadArraySize = XSC->getCurvatureArrayLength();
-    if (BroadArraySize <= 0) {
-        throw std::runtime_error("Error: Invalid BroadArraySize.");
-    }
+    if (BroadArraySize <= 0) throw std::runtime_error("Invalid BroadArraySize");
 
-    // Collect data into a flat vector (x, scale, curvature per row)
     std::vector<double> data;
-    data.reserve(BroadArraySize * 3 * 10); // rough reserve, optional
+    
+    for (int scaleIdx = 0; scaleIdx < BroadArraySize; ++scaleIdx) {
+        int CurvatureArraySize = XSC->getIndex(scaleIdx)->getLength();
+        if (CurvatureArraySize <= 0)
+            throw std::runtime_error("Invalid CurvatureArraySize at index " + std::to_string(scaleIdx));
 
-    for (int ScaleSwitching = 0; ScaleSwitching < BroadArraySize; ++ScaleSwitching) {
-        int CurvatureArraySize = XSC->getIndex(ScaleSwitching)->getLength();
-        if (CurvatureArraySize <= 0) {
-            throw std::runtime_error(
-                "Error: Invalid CurvatureArraySize at index " + std::to_string(ScaleSwitching)
-            );
-        }
-
-        for (int CurvatureSwitching = 0; CurvatureSwitching < CurvatureArraySize; ++CurvatureSwitching) {
-            double xpos = XSC->getPointAddress(
-                CurvatureSwitching + ScaleSwitching + uData->getMinScale()
-            )->x;
-
-            double scale = XSC->getIndex(ScaleSwitching)->getScale() * XSC->getMinLength();
-
-            double curvature = XSC->getIndex(ScaleSwitching)->getCurvature(CurvatureSwitching);
-
-            data.push_back(xpos);
-            data.push_back(scale);
-            data.push_back(curvature);
+        for (int curvIdx = 0; curvIdx < CurvatureArraySize; ++curvIdx) {
+            data.push_back(XSC->getPointAddress(curvIdx + scaleIdx + uData->getMinScale())->x);
+            data.push_back(XSC->getIndex(scaleIdx)->getScale() * XSC->getMinLength());
+            data.push_back(XSC->getIndex(scaleIdx)->getCurvature(curvIdx));
         }
     }
 
-    // Compute number of rows
     ssize_t nrows = data.size() / 3;
     ssize_t ncols = 3;
-    // Create a NumPy array view into the vector (no copy, vector owns memory)
+
+    // Use a capsule to manage the lifetime of the vector
+    double* data_ptr = data.data();
+    auto capsule = py::capsule(new std::vector<double>(std::move(data)), [](void *v) {
+        delete reinterpret_cast<std::vector<double>*>(v);
+    });
+
     return py::array_t<double>(
-        { nrows, ncols },                      // shape
-        { sizeof(double) * 3, sizeof(double) }, // strides
-        data.data(),                       // raw pointer
-        py::cast(data)                     // keep vector alive as base object
+        {nrows, ncols},
+        {sizeof(double)*3, sizeof(double)},
+        data_ptr,
+        capsule
     );
 }
+// ...existing code...
+
+
+
+
 //File checking:
 // Function to check if a file exists
 bool FileHandler::validPath(const std::string& path) {

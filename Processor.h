@@ -1,6 +1,6 @@
 #ifndef PROCESSOR_H
 #define PROCESSOR_H
-#endif
+
 #include<stdio.h> 
 #include<stdlib.h>
 #include<iostream>
@@ -9,7 +9,7 @@
 #include"userInputCLI.h"
 #include<string>
 #include<chrono>
-using namespace std;
+
 
 //testing single execution method
 #include "fileHandler.h"
@@ -18,6 +18,7 @@ using namespace std;
 #include "formula.h"
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
+#include <pybind11/stl.h>
 namespace py = pybind11;
 
 class Processor{
@@ -41,3 +42,4 @@ class Processor{
 
 
 };
+#endif
