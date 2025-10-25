@@ -4,7 +4,7 @@ import numpy as np
 import fastplotlib as fpl
 
 # number of points
-n = 16000000
+n = 1000
 
 # create data in the shape of a spiral
 phi = np.linspace(0, 30, n)
@@ -14,7 +14,8 @@ ys = np.random.normal(scale=1, size=n)
 zs = phi * np.sin(phi) + np.random.normal(scale=1.5, size=n)
 
 data = np.column_stack([xs, ys, zs])
-
+print(type(data))
+print(data)
 # generate some random sizes for the points
 sizes = np.abs(np.random.normal(loc=0, scale=1, size=n))
 

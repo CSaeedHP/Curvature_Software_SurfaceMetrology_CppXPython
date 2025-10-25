@@ -28,7 +28,7 @@ const double PI = 3.14159265358979323846;
 // this fucntion follows Heron's formula for cuvature---------------------------------------------------------------------
     double Formula::herons (point *point1, point *point2, point *point3){
         double x1 = point1->x, z1 = point1->z, x2 = point2->x, z2 = point2->z, x3 = point3->x, z3 = point3->z, 
-               curve, ABX, ABZ, BCX, BCZ, SlopeAB, SlopeBC, yfor, sideA, sideB, sideC, SP;
+               curve, triangleArea, ABX, ABZ, BCX, BCZ, SlopeAB, SlopeBC, yfor, sideA, sideB, sideC, SP;
 
         ABX = x1-x2;
         ABZ = z1-z2;
@@ -57,7 +57,8 @@ const double PI = 3.14159265358979323846;
         // required for herons formula
         SP = ((sideA + sideB + sideC)/2); // Semi Perimeter 
         
-        curve = 4*(SP * pow((SP - sideA), 2) * (SP - sideB) * (SP - sideC))/(sideA * sideB * sideC);
+        triangleArea = pow((SP * (SP - sideA) * (SP - sideB) * (SP - sideC)), 0.5);
+        curve = 4 * triangleArea / (sideA * sideB * sideC);
 
         if(z3 < yfor){
             curve = (curve * -1);
@@ -111,7 +112,7 @@ const double PI = 3.14159265358979323846;
 
         first_deriv = 2 * a * Bx + b;
         second_deriv = 2 * a;
-        curve = (4 * ((std::abs(second_deriv))/(pow((1 + pow(first_deriv, 2)), 1.5))));
+        curve = ((std::abs(second_deriv))/(pow((1 + pow(first_deriv, 2)), 1.5)));
 
         //----------------------------------------------------------------------------------------------------------------
         // sign of curvature determined by comparing the average of extreme heights with the central height

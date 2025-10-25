@@ -53,7 +53,7 @@ target_link_libraries(curvature PRIVATE
     dataContainer
     userInputCLI
 )
-
+# add_executable(curvature_exe main.cpp)
 # Include directories for headers
 target_include_directories(curvature PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}

@@ -13,6 +13,8 @@ import numpy as np
 import random
 import X3Pconverter
 import sys
+import threading
+import fastplotlib as fpl
 sys.path.append(os.path.abspath("..//build//Debug"))
 import curvature
 root = Tk()
@@ -101,7 +103,7 @@ analysisdetails.set("No analysis stored")
 
 
 XSC = Variable()
-
+data = np.empty((0,0))
 
 
 #DEFINE FUNCTIONS HERE
@@ -350,7 +352,7 @@ def startanalysis():
     print(scale_user_upper)
 
     # proc.loadData(str(filename.get()),float(scale_user_lower),float(scale_user_upper),bool(radiovalue.get()),int(FunctionCombo.current()),int(FunctionHybrid.current()))
-    proc.loadData(str(filename.get()),float(minimumentry.get()),float(maximumentry.get()),bool(radiovalue.get()),int(FunctionCombo.current()+1),int(FunctionHybrid.current()+1))
+    proc.loadData(str(filename.get()),float(minimumentry.get()),float(maximumentry.get()),bool(radiovalue.get()),int(FunctionHybrid.current()+1),int(FunctionCombo.current()+1))
     # if radiovalue.get():
     # if radiovalue.get():
     #     xsc1 = analysis.GUI_parse_hybrid_data(fileobject.get(),FunctionCombo.get(),FunctionHybrid.get(),scale_user_lower,scale_user_upper,dec_places)
@@ -362,11 +364,87 @@ def startanalysis():
     print("data loaded successfully!")
     proc.processData()
     print("data processed successfully!")
-    xsc1 = proc.fetchData()
-    XSC.set(xsc1)
+    global data
+    data = proc.fetchData()
+    print(data)
+    print(type(data))
     print("all analysis completed!")
 
 
+# ...existing code...
+def plot3dfpl(data):
+    # validate and normalize input to a contiguous numeric ndarray of shape (n,3)
+    if not isinstance(data, np.ndarray):
+        data = np.asarray(data)
+    # ensure numeric dtype and contiguous layout
+    try:
+        data = np.ascontiguousarray(data, dtype=np.float64)
+    except Exception as e:
+        raise ValueError(f"Can't convert data to numeric ndarray: {e}")
+
+    if data.ndim != 2 or data.shape[1] != 3:
+        raise ValueError(f"fastplotlib expects shape (n,3); got shape {getattr(data,'shape',None)}")
+
+    print("plotting", data.shape, data.dtype, "C_CONTIGUOUS=", data.flags['C_CONTIGUOUS'])
+
+    figure = fpl.Figure(
+        cameras="3d",
+        size=(700, 560),
+        canvas_kwargs={"max_fps": 500, "vsync": False}
+    )
+
+    # add_scatter accepts an (n,3) array directly
+    spiral = figure[0, 0].add_scatter(data, cmap="viridis_r", alpha=0.5, sizes = 5)
+    print("displaying")
+    figure.canvas.background_color = (1, 1, 1, 1)  # Set background to white
+    figure.show()
+    _start_fpl_loop_once()
+    camera_state = {
+        'position': np.array([-0.13046005, 20.09142224, 29.03347696]),
+        'rotation': np.array([-0.44485092,  0.05335406,  0.11586037,  0.88647469]),
+        'scale': np.array([1., 1., 1.]),
+        'reference_up': np.array([0., 1., 0.]),
+        'fov': 50.0,
+        'width': 62.725074768066406,
+        'height': 8.856056690216064,
+        'zoom': 0.75,
+        'maintain_aspect': True,
+        'depth_range': None
+    }
+
+    figure[0, 0].camera.set_state(camera_state)
+# ...existing code...
+# def plot3dfpl(data):
+#     figure = fpl.Figure(
+#     cameras="3d",
+#     size=(700, 560),
+#     canvas_kwargs={"max_fps": 500, "vsync": False}
+#     )
+#     print("plotting")
+#     '''plot a set of points for curvature using fastplotlib. Options are for Log of the scale and log of absolute value of curvature'''
+#     spiral = figure[0, 0].add_scatter(data, cmap="viridis_r", alpha=0.5)
+#     print("displaying")
+#     figure.show()
+#     camera_state = {
+#     'position': np.array([-0.13046005, 20.09142224, 29.03347696]),
+#     'rotation': np.array([-0.44485092,  0.05335406,  0.11586037,  0.88647469]),
+#     'scale': np.array([1., 1., 1.]),
+#     'reference_up': np.array([0., 1., 0.]),
+#     'fov': 50.0,
+#     'width': 62.725074768066406,
+#     'height': 8.856056690216064,
+#     'zoom': 0.75,
+#     'maintain_aspect': True,
+#     'depth_range': None
+#     }
+
+#     figure[0, 0].camera.set_state(camera_state)
+
+def _start_fpl_loop_once():
+    if not getattr(_start_fpl_loop_once, "started", False):
+        t = threading.Thread(target=fpl.loop.run, daemon=True)
+        t.start()
+        _start_fpl_loop_once.started = True
 
 def plot3d(XSC,LogScale,LogABSCurvature,title,xlabel,ylabel,zlabel):
     #initial declaration of the figure
@@ -424,6 +502,7 @@ def plot3d(XSC,LogScale,LogABSCurvature,title,xlabel,ylabel,zlabel):
     plt.show(block = False)
     return theplot
 
+
 def plot2d(input_array,fignumber):
     '''plots a 2d array of the inputted data.'''
     # fig, axs = plt.subplots(2)
@@ -445,15 +524,18 @@ def plot2d(input_array,fignumber):
     
 
 def graphdata():
-    data = XSC.get()
-    if data and WebBrowserGraphOn.get():
-        display.plotly3d(data,LogScaleOn.get(),LogAbsCurvatureOn.get())
+    print(data)
+    if data.size == 0:
+        nodata = messagebox.showwarning("No data","No analysis data to graph. Please run an analysis first.")
         return
-    if data:
+    if data.any and WebBrowserGraphOn.get():
+        plot3dfpl(data)
+        # display.plotly3d(data,LogScaleOn.get(),LogAbsCurvatureOn.get())
+        return
+    if data.any:
         plot3d(data,LogScaleOn.get(),LogAbsCurvatureOn.get(),"Position, Scale, Curvature","Position","Scale","Curvature")
         return
-    else:
-        grapherror = messagebox.showerror(title = "Graphing failed", message = "Please perform an analysis before graphing.")
+
 
 
 
@@ -744,6 +826,10 @@ def WriteCSVError():
 def quit_popup():
     print('quit')
     popup.withdraw()
+
+
+
+
 
 popup.protocol("WM_DELETE_WINDOW", quit_popup)
 def open_popup_error_analysis():

@@ -69,6 +69,7 @@ def CurveHeron(x1,z1,x2,z2,x3,z3):
     CurveHeron = 4*(SP * (SP - sideA)**2 * (SP - sideB) * (SP - sideC))/(sideA * sideB * sideC)
     if(z3 < yfor):
         CurveHeron = (CurveHeron * -1)
+
     return CurveHeron
 
 
