@@ -58,3 +58,15 @@ target_link_libraries(curvature PRIVATE
 target_include_directories(curvature PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}
 )
+
+# Automatically copy the built .pyd into the Python GUI folder
+set(PYTHON_DIR "${CMAKE_SOURCE_DIR}/python")  # Python folder
+
+add_custom_command(
+    TARGET curvature
+    POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        $<TARGET_FILE:curvature>    # the compiled .pyd
+        "${PYTHON_DIR}"          # destination folder
+    COMMENT "Copying curvature .pyd into the Python folder..."
+)
