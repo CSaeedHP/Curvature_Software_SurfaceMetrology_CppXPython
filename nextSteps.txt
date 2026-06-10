@@ -1,0 +1,6 @@
+Next Steps:
+1. Create a clear graphing environment to better view curvature data
+2. Check curvature values with more tests
+3. Use Program on the real world cube data to see the 
+    differences in curvature over the different lengths of time
+4. Create an easily transferable method of the program and host it on the website

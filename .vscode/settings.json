@@ -80,5 +80,7 @@
         "valarray": "cpp",
         "variant": "cpp",
         "xtree": "cpp"
-    }
+    },
+    "cmake.sourceDirectory": "C:/Users/njdec/.vscode/Curvature_Software_SurfaceMetrology_CppXPython/C++",
+    "python-envs.defaultEnvManager": "ms-python.python:system"
 }

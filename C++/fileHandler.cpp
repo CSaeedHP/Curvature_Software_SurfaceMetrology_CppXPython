@@ -6,8 +6,10 @@
 #include <filesystem>
 #include <vector>
 #include "fileHandler.h"
+#include <pybind11/stl.h>
 #include "userData.h"
-
+namespace py = pybind11;
+using ssize_t = py::ssize_t;
 using namespace std;
 
 FileHandler::FileHandler() {}
@@ -141,6 +143,53 @@ int FileHandler::fileWrite(UserData* uData, string fileName) {
     std::cout << "Data written to file successfully." << std::endl;
     return 0;
 }
+
+
+// 
+
+// ...existing code...
+
+py::array_t<double> FileHandler::exportData(UserData* uData) {
+    DataContainer* XSC = uData->getDataContainer();
+    if (!XSC) throw std::runtime_error("DataContainer is null");
+
+    int BroadArraySize = XSC->getCurvatureArrayLength();
+    if (BroadArraySize <= 0) throw std::runtime_error("Invalid BroadArraySize");
+
+    std::vector<double> data;
+    
+    for (int scaleIdx = 0; scaleIdx < BroadArraySize; ++scaleIdx) {
+        int CurvatureArraySize = XSC->getIndex(scaleIdx)->getLength();
+        if (CurvatureArraySize <= 0)
+            throw std::runtime_error("Invalid CurvatureArraySize at index " + std::to_string(scaleIdx));
+
+        for (int curvIdx = 0; curvIdx < CurvatureArraySize; ++curvIdx) {
+            data.push_back(XSC->getPointAddress(curvIdx + scaleIdx + uData->getMinScale())->x);
+            data.push_back(XSC->getIndex(scaleIdx)->getScale() * XSC->getMinLength());
+            data.push_back(XSC->getIndex(scaleIdx)->getCurvature(curvIdx));
+        }
+    }
+
+    ssize_t nrows = data.size() / 3;
+    ssize_t ncols = 3;
+
+    // Use a capsule to manage the lifetime of the vector
+    double* data_ptr = data.data();
+    auto capsule = py::capsule(new std::vector<double>(std::move(data)), [](void *v) {
+        delete reinterpret_cast<std::vector<double>*>(v);
+    });
+
+    return py::array_t<double>(
+        {nrows, ncols},
+        {sizeof(double)*3, sizeof(double)},
+        data_ptr,
+        capsule
+    );
+}
+// ...existing code...
+
+
+
 
 //File checking:
 // Function to check if a file exists
